@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gestión de Incidencias - EROSKI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
   <style>
     body { background-color: #f8f9fa; padding-top: 20px; }
     .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -16,6 +15,7 @@
     .photo-preview { max-width: 100px; margin: 5px; }
   </style>
 
+  <!-- 🔐 LOGIN LOCAL -->
   <script>
     const ACCESS_PASSWORD = 'eroski2025';
     const ACCESS_USER = 'admin';
@@ -51,146 +51,84 @@
     <h1 class="text-center mb-4">Gestión de Incidencias - <strong>SUPERMERCADOS EROSKI</strong></h1>
     <ul class="nav nav-tabs mb-4">
       <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nueva">Nueva Incidencia</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#abiertas">Incidencias Abiertas</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#abiertas">Abiertas</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cerradas">Cerradas</a></li>
     </ul>
+
     <div class="tab-content">
+      <!-- NUEVA -->
       <div class="tab-pane fade show active" id="nueva">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Registrar Nueva Incidencia</h5>
             <form id="formIncidencia">
               <div class="mb-3">
-                <label for="centro" class="form-label">Centro EROSKI</label>
+                <label>Centro EROSKI</label>
                 <select class="form-select" id="centro" required>
-                  <option value="">Selecciona un centro</option>
+                  <option value="">Selecciona centro</option>
                   <option>Eroski Binissalem I (6705)</option>
-                  <option>Eroski Binissalen II (6096)</option>
                   <option>Eroski NOVA PARIS-CALVIA (7490)</option>
-                  <option>Eroski Secar (6495)</option>
                   <option>Eroski Son Moix (6801)</option>
-                  <option>Eroski Dragonera (6350)</option>
                   <option>Eroski La Puebla (6362)</option>
-                  <option>La Puebla 2 (6067)</option>
                   <option>Eroski Bendinat (6752)</option>
-                  <option>Eroski Indioteria (6514)</option>
-                  <option>Eroski Son Cladera (6538)</option>
-                  <option>Eroski Mercat de Llevant (6729)</option>
-                  <option>Eroski Portixol (6753)</option>
-                  <option>Eroski Can Pastilla (6806)</option>
-                  <option>Eroski Borne (6831)</option>
                   <option>Eroski Santa María I (6309)</option>
-                  <option>Eroski Santa María II (6694)</option>
                   <option>Eroski Escorxador (6363)</option>
-                  <option>Eroski Coll I (6376)</option>
-                  <option>Eroski Coll II (6718)</option>
                   <option>Eroski Palmanova (6537)</option>
-                  <option>Eroski Santanvi (6713)</option>
                   <option>Eroski Colonia (6499)</option>
-                  <option>Eroski Médico Jose Darder (6749)</option>
-                  <option>Eroski Consell (6643)</option>
-                  <option>Eroski Soller II (6692)</option>
                   <option>Eroski Capitán Salom (6892)</option>
-                  <option>Eroski Campos II (6653)</option>
                   <option>Eroski Llucmajor (6759)</option>
-                  <option>Eroski Pascual Ribot (6882)</option>
                   <option>Eroski Alaró (6719)</option>
-                  <option>Eroski Lloseta (6308)</option>
-                  <option>Eroski Capitán Salom II (7558)</option>
-                  <option>Eroski Son Rullan (6439)</option>
-                  <option>Eroski Son Ferriol (6714)</option>
-                  <option>Eroski Pascual Ribot II (7557)</option>
-                  <option>Eroski Fábrica (6983)</option>
-                  <option>Eroski Archiduque (6625)</option>
-                  <option>Eroski Navegación (7503)</option>
-                  <option>Eroski Inca (6398)</option>
-                  <option>Eroski Inca IV NORTE (6066)</option>
-                  <option>Eroski Andrea Doria (6574)</option>
-                  <option>Eroski Algaida (6726)</option>
-                  <option>Eroski Manacor I (6377)</option>
-                  <option>Eroski Industria (6328)</option>
-                  <option>Eroski MERCAT NOU (6755)</option>
-                  <option>Eroski Pérez Galdos (6756)</option>
-                  <option>Eroski Pere Garau (6793)</option>
-                  <option>Eroski Muro (6909)</option>
                   <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
-                  <option>Eroski Reyes Católicos (6360)</option>
+                  <option>Eroski Muro (6909)</option>
                   <option>Eroski Sa Cabaneta (6852)</option>
                 </select>
               </div>
               <div class="mb-3">
-                <label for="solicitadoPor" class="form-label">Solicitado por</label>
+                <label>Solicitado por</label>
                 <select class="form-select" id="solicitadoPor" required>
                   <option value="operario">Operario</option>
                   <option value="responsable">Responsable del centro</option>
                 </select>
               </div>
               <div class="mb-3">
-                <label for="descripcion" class="form-label">Descripción</label>
+                <label>Descripción</label>
                 <textarea class="form-control" id="descripcion" rows="3" required></textarea>
               </div>
               <div class="mb-3">
-                <label for="materiales" class="form-label">Materiales necesarios</label>
-                <input type="text" class="form-control" id="materiales" />
+                <label>Materiales necesarios</label>
+                <input type="text" class="form-control" id="materiales"/>
               </div>
               <div class="mb-3">
-                <label for="foto" class="form-label">Adjuntar foto</label>
-                <input type="file" class="form-control" id="foto" accept="image/*" />
+                <label>Foto (opcional)</label>
+                <input type="file" class="form-control" id="foto" accept="image/*"/>
               </div>
-              <button type="submit" class="btn btn-primary">Registrar Incidencia</button>
+              <button type="submit" class="btn btn-primary">Crear Incidencia</button>
             </form>
           </div>
         </div>
       </div>
+
+      <!-- ABIERTAS -->
       <div class="tab-pane fade" id="abiertas">
-        <div class="search-section mb-4">
-          <h6>Filtrar Incidencias Abiertas</h6>
-          <div class="row g-2">
-            <div class="col-md-4">
-              <input type="text" class="form-control form-control-sm" id="searchOpen" placeholder="Buscar..." />
-            </div>
-            <div class="col-md-4">
-              <select class="form-select form-select-sm" id="filterCentroOpen">
-                <option value="">Todos los centros</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <button class="btn btn-sm btn-outline-secondary w-100" id="btnSearchOpen">Buscar</button>
-            </div>
-          </div>
+        <div class="search-section mb-3">
+          <input type="text" class="form-control form-control-sm mb-2" id="searchOpen" placeholder="Buscar..." />
+          <button class="btn btn-sm btn-secondary w-100" id="btnSearchOpen">Filtrar</button>
         </div>
         <div id="listaAbiertas" class="row"></div>
       </div>
+
+      <!-- CERRADAS -->
       <div class="tab-pane fade" id="cerradas">
-        <div class="search-section mb-4">
-          <h6>Filtrar Incidencias Cerradas</h6>
-          <div class="row g-2">
-            <div class="col-md-3">
-              <input type="text" class="form-control form-control-sm" id="searchClosed" placeholder="Buscar..." />
-            </div>
-            <div class="col-md-3">
-              <select class="form-select form-select-sm" id="filterCentroClosed">
-                <option value="">Todos los centros</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <input type="date" class="form-control form-control-sm" id="fechaDesde" />
-            </div>
-            <div class="col-md-3">
-              <input type="date" class="form-control form-control-sm" id="fechaHasta" />
-            </div>
-            <div class="col-12 mt-2">
-              <button class="btn btn-sm btn-outline-secondary w-100" id="btnSearchClosed">Buscar</button>
-            </div>
-          </div>
+        <div class="search-section mb-3">
+          <input type="text" class="form-control form-control-sm mb-2" id="searchClosed" placeholder="Buscar..." />
+          <button class="btn btn-sm btn-secondary w-100" id="btnSearchClosed">Filtrar</button>
         </div>
         <div id="listaCerradas" class="row"></div>
       </div>
     </div>
   </div>
 
-  <!-- Modales -->
-  <div class="modal fade" id="photoModal" tabindex="-1">
+  <!-- MODAL FOTO -->
+  <div class="modal fade" id="photoModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body text-center">
@@ -200,218 +138,112 @@
     </div>
   </div>
 
-  <div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar Incidencia</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="formEdit">
-            <input type="hidden" id="editId"/>
-            <div class="mb-3"><input type="text" class="form-control" id="editCentro" readonly /></div>
-            <div class="mb-3">
-              <select class="form-select" id="editSolicitadoPor">
-                <option value="operario">Operario</option>
-                <option value="responsable">Responsable</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <textarea class="form-control" id="editDescripcion" rows="3"></textarea>
-            </div>
-            <div class="mb-3">
-              <input type="text" class="form-control" id="editMateriales"/>
-            </div>
-            <div class="mb-3" id="editPhotoPreview"></div>
-            <div class="mb-3">
-              <input type="file" class="form-control" id="editFoto" accept="image/*"/>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-success" id="btnCerrarIncidencia">Cerrar</button>
-          <button type="button" class="btn btn-primary" id="btnGuardarEdicion">Guardar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    let incidencias = JSON.parse(localStorage.getItem('incidencias')) || [];
-    const centros = Array.from(document.querySelectorAll('#centro option')).map(o => o.value).filter(v => v);
+    let incidencias = [];
 
-    function generarReferencia() {
-      const now = new Date();
-      const dateStr = now.getFullYear().toString().slice(-2) +
-                      String(now.getMonth() + 1).padStart(2, '0') +
-                      String(now.getDate()).padStart(2, '0');
-      const count = incidencias.filter(i => i.referencia.startsWith(dateStr)).length + 1;
-      return `${dateStr}-${String(count).padStart(2, '0')}`;
+    // 🔗 URLs - CAMBIA ESTAS POR LAS TUYAS
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/1234567890/pub?output=csv';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/1234567890/exec';
+
+    async function cargarDeSheet() {
+      try {
+        const res = await fetch(SHEET_CSV_URL);
+        const csv = await res.text();
+        const lines = csv.trim().split('\n');
+        const headers = lines[0].split('\t');
+        return lines.slice(1).map(line => {
+          const values = line.split('\t');
+          return headers.reduce((obj, h, i) => ({ ...obj, [h.trim()]: values[i] || '' }), {});
+        });
+      } catch (e) {
+        return [];
+      }
     }
 
-    function formatDate(dateStr) {
-      return new Date(dateStr).toLocaleDateString('es-ES');
+    async function guardarEnSheet(inc) {
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify(inc)
+        });
+      } catch (e) {}
     }
 
-    function guardarIncidencias() {
-      localStorage.setItem('incidencias', JSON.stringify(incidencias));
-    }
-
-    async function obtenerFotoData(fileInput) {
-      return new Promise((resolve) => {
-        if (!fileInput || !fileInput.files[0]) return resolve(null);
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(fileInput.files[0]);
-      });
+    function generarRef() {
+      const d = new Date();
+      const date = d.getFullYear().toString().slice(-2) +
+                   String(d.getMonth()+1).padStart(2,'0') +
+                   String(d.getDate()).padStart(2,'0');
+      const count = incidencias.filter(i => i.referencia.startsWith(date)).length + 1;
+      return `${date}-${String(count).padStart(2,'0')}`;
     }
 
     document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const centro = document.getElementById('centro').value;
-      const solicitadoPor = document.getElementById('solicitadoPor').value;
-      const descripcion = document.getElementById('descripcion').value;
-      const materiales = document.getElementById('materiales').value;
-      const foto = await obtenerFotoData(document.getElementById('foto'));
-      const fechaApertura = new Date().toISOString();
-      const referencia = generarReferencia();
-
-      const nueva = { id: Date.now().toString(), referencia, centro, solicitadoPor, descripcion, materiales, foto, fechaApertura, fechaCierre: null, cerrada: false };
+      const nueva = {
+        id: Date.now().toString(),
+        referencia: generarRef(),
+        centro: document.getElementById('centro').value,
+        solicitadoPor: document.getElementById('solicitadoPor').value,
+        descripcion: document.getElementById('descripcion').value,
+        materiales: document.getElementById('materiales').value,
+        foto: document.getElementById('foto').files[0] ? await new Promise(r => {
+          const a = new FileReader();
+          a.onload = e => r(e.target.result);
+          a.readAsDataURL(document.getElementById('foto').files[0]);
+        }) : null,
+        fechaApertura: new Date().toISOString(),
+        fechaCierre: null,
+        cerrada: false
+      };
       incidencias.push(nueva);
-      guardarIncidencias();
-      alert(`Incidencia ${referencia} registrada`);
+      await guardarEnSheet(nueva);
+      alert(`Creada: ${nueva.referencia}`);
       document.getElementById('formIncidencia').reset();
-      renderizarListas();
+      render();
     });
 
-    function cargarCentros() {
-      [document.getElementById('filterCentroOpen'), document.getElementById('filterCentroClosed')].forEach(select => {
-        select.innerHTML = '<option value="">Todos los centros</option>';
-        centros.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c;
-          opt.textContent = c;
-          select.appendChild(opt);
-        });
-      });
+    function render() {
+      renderLista('#listaAbiertas', i => !i.cerrada);
+      renderLista('#listaCerradas', i => i.cerrada);
     }
-    cargarCentros();
 
-    function renderizarLista(selector, filtro) {
-      const container = document.querySelector(selector);
-      container.innerHTML = '';
+    function renderLista(selector, filtro) {
+      const el = document.querySelector(selector);
+      el.innerHTML = '';
       const lista = incidencias.filter(filtro);
-      if (lista.length === 0) {
-        container.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
-        return;
-      }
-      lista.forEach(inc => {
-        const fechaApertura = formatDate(inc.fechaApertura);
-        const fechaCierre = inc.fechaCierre ? formatDate(inc.fechaCierre) : '—';
+      lista.forEach(i => {
         const div = document.createElement('div');
-        div.className = 'col-md-6 col-lg-4 mb-3';
+        div.className = 'col-md-6 mb-3';
         div.innerHTML = `
-          <div class="card h-100">
+          <div class="card">
             <div class="card-body">
-              <h6 class="card-subtitle mb-2 text-muted">${inc.referencia}</h6>
-              <h5 class="card-title">${inc.centro}</h5>
-              <p class="card-text small">${inc.descripcion.substring(0, 100)}...</p>
-              <p><strong>Apertura:</strong> ${fechaApertura}</p>
-              <p><strong>Cierre:</strong> ${fechaCierre}</p>
-              ${inc.foto ? `<img src="${inc.foto}" class="img-thumbnail photo-preview" data-img="${inc.foto}">` : ''}
-              <button class="btn btn-sm btn-info ver-foto-btn" ${inc.foto ? '' : 'disabled'}>Ver Foto</button>
-              <button class="btn btn-sm btn-warning edit-btn" data-id="${inc.id}">Editar</button>
-              ${!inc.cerrada ? `<button class="btn btn-sm btn-danger close-btn" data-id="${inc.id}">Cerrar</button>` : `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${inc.id}">Reabrir</button>`}
+              <h6>${i.referencia}</h6>
+              <p><strong>${i.centro}</strong></p>
+              <p class="small">${i.descripcion}</p>
+              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
+              <button class="btn btn-sm btn-info ver-foto" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
             </div>
           </div>
         `;
-        container.appendChild(div);
+        el.appendChild(div);
       });
 
-      document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.ver-foto:not([disabled])').forEach(btn => {
+        btn.addEventListener('click', e => {
           document.getElementById('modalImage').src = e.target.previousElementSibling.dataset.img;
           new bootstrap.Modal(document.getElementById('photoModal')).show();
         });
       });
-
-      document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => abrirModalEdicion(e.target.dataset.id));
-      });
-
-      document.querySelectorAll('.close-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          if (confirm('¿Cerrar?')) {
-            const inc = incidencias.find(i => i.id === e.target.dataset.id);
-            inc.cerrada = true;
-            inc.fechaCierre = new Date().toISOString();
-            guardarIncidencias();
-            renderizarListas();
-          }
-        });
-      });
-
-      document.querySelectorAll('.reopen-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          if (confirm('¿Reabrir?')) {
-            const inc = incidencias.find(i => i.id === e.target.dataset.id);
-            inc.cerrada = false;
-            inc.fechaCierre = null;
-            guardarIncidencias();
-            renderizarListas();
-          }
-        });
-      });
     }
 
-    function renderizarListas() {
-      renderizarLista('#listaAbiertas', i => !i.cerrada);
-      renderizarLista('#listaCerradas', i => i.cerrada);
-    }
-
-    document.getElementById('btnSearchOpen').addEventListener('click', renderizarListas);
-    document.getElementById('btnSearchClosed').addEventListener('click', renderizarListas);
-
-    function abrirModalEdicion(id) {
-      const inc = incidencias.find(i => i.id === id);
-      document.getElementById('editId').value = inc.id;
-      document.getElementById('editCentro').value = inc.centro;
-      document.getElementById('editSolicitadoPor').value = inc.solicitadoPor;
-      document.getElementById('editDescripcion').value = inc.descripcion;
-      document.getElementById('editMateriales').value = inc.materiales || '';
-      document.getElementById('editPhotoPreview').innerHTML = inc.foto ? `<img src="${inc.foto}" class="img-thumbnail" style="max-height: 100px;">` : 'No hay foto';
-      new bootstrap.Modal(document.getElementById('editModal')).show();
-    }
-
-    document.getElementById('btnGuardarEdicion').addEventListener('click', async () => {
-      const id = document.getElementById('editId').value;
-      const inc = incidencias.find(i => i.id === id);
-      inc.solicitadoPor = document.getElementById('editSolicitadoPor').value;
-      inc.descripcion = document.getElementById('editDescripcion').value;
-      inc.materiales = document.getElementById('editMateriales').value;
-      const nuevaFoto = await obtenerFotoData(document.getElementById('editFoto'));
-      if (nuevaFoto) inc.foto = nuevaFoto;
-      guardarIncidencias();
-      renderizarListas();
-      bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+    // Cargar al inicio
+    window.addEventListener('load', async () => {
+      incidencias = await cargarDeSheet();
+      render();
     });
-
-    document.getElementById('btnCerrarIncidencia').addEventListener('click', () => {
-      const id = document.getElementById('editId').value;
-      const inc = incidencias.find(i => i.id === id);
-      if (confirm('¿Cerrar?')) {
-        inc.cerrada = true;
-        inc.fechaCierre = new Date().toISOString();
-        guardarIncidencias();
-        renderizarListas();
-        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-      }
-    });
-
-    renderizarListas();
   </script>
 </body>
 </html>
