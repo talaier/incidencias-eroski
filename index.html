@@ -218,10 +218,34 @@
               <h6 class="text-muted">${i.referencia}</h6>
               <h5>${i.centro}</h5>
               <p class="small">${i.descripcion}</p>
+              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
+              <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
+              <button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>
             </div>
           </div>
         `;
         el.appendChild(div);
+      });
+
+      document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const img = e.target.parentElement.querySelector('.photo-preview');
+          document.getElementById('modalImage').src = img.dataset.img;
+          new bootstrap.Modal(document.getElementById('photoModal')).show();
+        });
+      });
+
+      document.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (confirm('¿Cerrar esta incidencia?')) {
+            const id = e.target.dataset.id;
+            const inc = incidencias.find(i => i.id === id);
+            inc.cerrada = true;
+            inc.fechaCierre = new Date().toISOString();
+            guardarEnSheet(inc);
+            render();
+          }
+        });
       });
     }
 
