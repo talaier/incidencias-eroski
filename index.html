@@ -219,9 +219,15 @@
     function generarRef() {
       const d = new Date();
       const date = d.getFullYear().toString().slice(-2) +
-                   String(d.getMonth() + 1).padStart(2, '0') +
-                   String(d.getDate()).padStart(2, '0');
-      const count = incidencias.filter(i => i.referencia.startsWith(date)).length + 1;
+                  String(d.getMonth() + 1).padStart(2, '0') +
+                  String(d.getDate()).padStart(2, '0');
+
+      const count = incidencias.filter(i => 
+        i.referencia && 
+        typeof i.referencia === 'string' && 
+        i.referencia.startsWith(date)
+      ).length + 1;
+
       return `${date}-${String(count).padStart(2, '0')}`;
     }
 
