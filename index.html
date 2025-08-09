@@ -8,7 +8,6 @@
   <style>
     body { background-color: #f8f9fa; padding-top: 20px; }
     .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .img-thumbnail { cursor: pointer; }
     .search-section { background-color: #e8f5e8; padding: 15px; border-radius: 8px; }
     .photo-preview { max-width: 100px; margin: 5px; }
   </style>
@@ -54,121 +53,62 @@
     </ul>
 
     <div class="tab-content">
-      <!-- NUEVA INCIDENCIA -->
       <div class="tab-pane fade show active" id="nueva">
         <div class="card">
           <div class="card-body">
             <form id="formIncidencia">
               <div class="mb-3">
-                <label for="centro" class="form-label">Centro EROSKI</label>
+                <label>Centro EROSKI</label>
                 <select class="form-select" id="centro" required>
-                  <option value="">Selecciona un centro</option>
+                  <option value="">Selecciona centro</option>
                   <option>Eroski Binissalem I (6705)</option>
-                  <option>Eroski Binissalen II (6096)</option>
                   <option>Eroski NOVA PARIS-CALVIA (7490)</option>
-                  <option>Eroski Secar (6495)</option>
                   <option>Eroski Son Moix (6801)</option>
-                  <option>Eroski Dragonera (6350)</option>
                   <option>Eroski La Puebla (6362)</option>
-                  <option>La Puebla 2 (6067)</option>
                   <option>Eroski Bendinat (6752)</option>
-                  <option>Eroski Indioteria (6514)</option>
-                  <option>Eroski Son Cladera (6538)</option>
-                  <option>Eroski Mercat de Llevant (6729)</option>
-                  <option>Eroski Portixol (6753)</option>
-                  <option>Eroski Can Pastilla (6806)</option>
-                  <option>Eroski Borne (6831)</option>
                   <option>Eroski Santa María I (6309)</option>
-                  <option>Eroski Santa María II (6694)</option>
                   <option>Eroski Escorxador (6363)</option>
-                  <option>Eroski Coll I (6376)</option>
-                  <option>Eroski Coll II (6718)</option>
                   <option>Eroski Palmanova (6537)</option>
-                  <option>Eroski Santanvi (6713)</option>
                   <option>Eroski Colonia (6499)</option>
-                  <option>Eroski Médico Jose Darder (6749)</option>
-                  <option>Eroski Consell (6643)</option>
-                  <option>Eroski Soller II (6692)</option>
                   <option>Eroski Capitán Salom (6892)</option>
-                  <option>Eroski Campos II (6653)</option>
                   <option>Eroski Llucmajor (6759)</option>
-                  <option>Eroski Pascual Ribot (6882)</option>
                   <option>Eroski Alaró (6719)</option>
-                  <option>Eroski Lloseta (6308)</option>
-                  <option>Eroski Capitán Salom II (7558)</option>
-                  <option>Eroski Son Rullan (6439)</option>
-                  <option>Eroski Son Ferriol (6714)</option>
-                  <option>Eroski Pascual Ribot II (7557)</option>
-                  <option>Eroski Fábrica (6983)</option>
-                  <option>Eroski Archiduque (6625)</option>
-                  <option>Eroski Navegación (7503)</option>
-                  <option>Eroski Inca (6398)</option>
-                  <option>Eroski Inca IV NORTE (6066)</option>
-                  <option>Eroski Andrea Doria (6574)</option>
-                  <option>Eroski Algaida (6726)</option>
-                  <option>Eroski Manacor I (6377)</option>
-                  <option>Eroski Industria (6328)</option>
-                  <option>Eroski MERCAT NOU (6755)</option>
-                  <option>Eroski Pérez Galdos (6756)</option>
-                  <option>Eroski Pere Garau (6793)</option>
-                  <option>Eroski Muro (6909)</option>
                   <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
-                  <option>Eroski Reyes Católicos (6360)</option>
+                  <option>Eroski Muro (6909)</option>
                   <option>Eroski Sa Cabaneta (6852)</option>
                 </select>
               </div>
               <div class="mb-3">
-                <label for="solicitadoPor" class="form-label">Solicitado por</label>
+                <label>Solicitado por</label>
                 <select class="form-select" id="solicitadoPor" required>
                   <option value="operario">Operario</option>
                   <option value="responsable">Responsable del centro</option>
                 </select>
               </div>
               <div class="mb-3">
-                <label for="descripcion" class="form-label">Descripción de la incidencia</label>
+                <label>Descripción</label>
                 <textarea class="form-control" id="descripcion" rows="3" required></textarea>
               </div>
               <div class="mb-3">
-                <label for="materiales" class="form-label">Materiales necesarios</label>
-                <input type="text" class="form-control" id="materiales" placeholder="Destornillador, tornillos, etc." />
+                <label>Materiales necesarios</label>
+                <input type="text" class="form-control" id="materiales"/>
               </div>
               <div class="mb-3">
-                <label for="foto" class="form-label">Adjuntar foto (opcional)</label>
-                <input type="file" class="form-control" id="foto" accept="image/*" />
+                <label>Foto (opcional)</label>
+                <input type="file" class="form-control" id="foto" accept="image/*"/>
               </div>
-              <button type="submit" class="btn btn-primary">Registrar Incidencia</button>
+              <button type="submit" class="btn btn-primary">Crear Incidencia</button>
             </form>
           </div>
         </div>
       </div>
 
-      <!-- INCIDENCIAS ABIERTAS -->
       <div class="tab-pane fade" id="abiertas">
-        <div class="search-section mb-3">
-          <input type="text" class="form-control form-control-sm mb-2" id="searchOpen" placeholder="Buscar en abiertas..." />
-          <button class="btn btn-sm btn-secondary w-100" id="btnSearchOpen">Buscar</button>
-        </div>
         <div id="listaAbiertas" class="row"></div>
       </div>
 
-      <!-- INCIDENCIAS CERRADAS -->
       <div class="tab-pane fade" id="cerradas">
-        <div class="search-section mb-3">
-          <input type="text" class="form-control form-control-sm mb-2" id="searchClosed" placeholder="Buscar en cerradas..." />
-          <button class="btn btn-sm btn-secondary w-100" id="btnSearchClosed">Buscar</button>
-        </div>
         <div id="listaCerradas" class="row"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL PARA VER FOTO -->
-  <div class="modal fade" id="photoModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body text-center">
-          <img id="modalImage" class="img-fluid" src="" alt="Foto de incidencia"/>
-        </div>
       </div>
     </div>
   </div>
@@ -177,13 +117,10 @@
   <script>
     let incidencias = [];
 
-    // 🔗 URL DE GOOGLE SHEETS (CSV) - Publica tu hoja y usa esta URL
+    // ✅ COPIA AQUÍ TUS URLS
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOeeftmp0z9C-aIM25jGVFp2Jn9vn67NfEn7YPuBalPxc1pYxcsFMWyXUEOkemRB8zrZ6BZMdyIOoC/pub?output=csv';
-
-    // 🔗 URL DE GOOGLE APPS SCRIPT (Web App) - Asegúrate de que termine en /exec
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-qVJcOhtft8zC11R8NSgzZojavoJ--vfoytfYikeuXK0syLhWnfAk0XZESbf03M4Z/exec';
 
-    // Cargar incidencias desde Google Sheets
     async function cargarDeSheet() {
       try {
         const res = await fetch(SHEET_CSV_URL);
@@ -200,53 +137,44 @@
           return obj;
         });
       } catch (e) {
-        console.error('Error al cargar desde Google Sheets', e);
+        console.error('Error al cargar CSV', e);
         return [];
       }
     }
 
-    // Guardar incidencia en Google Sheets (modo no-cors)
-    async function guardarEnSheet(incidencia) {
+    async function guardarEnSheet(inc) {
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          mode: 'no-cors',  // ✅ Así evitas el error de CORS
-          body: JSON.stringify(incidencia)
+          mode: 'no-cors',
+          body: JSON.stringify(inc)
         });
-        // No verás errores, pero los datos se envían
-      } catch (e) {
-        // En modo 'no-cors', no se capturan errores
-      }
+      } catch (e) {}
     }
 
-    // Generar referencia: YYMMDD-01
     function generarRef() {
       const d = new Date();
-      const dateStr = d.getFullYear().toString().slice(-2) +
-                      String(d.getMonth() + 1).padStart(2, '0') +
-                      String(d.getDate()).padStart(2, '0');
+      const date = d.getFullYear().toString().slice(-2) +
+                   String(d.getMonth() + 1).padStart(2, '0') +
+                   String(d.getDate()).padStart(2, '0');
       const count = (Array.isArray(incidencias) ? incidencias : [])
-        .filter(i => i.referencia && typeof i.referencia === 'string' && i.referencia.startsWith(dateStr))
+        .filter(i => i.referencia && typeof i.referencia === 'string' && i.referencia.startsWith(date))
         .length + 1;
-      return `${dateStr}-${String(count).padStart(2, '0')}`;
+      return `${date}-${String(count).padStart(2, '0')}`;
     }
 
-    // Manejar envío del formulario
     document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      // Obtener foto
-      let fotoData = null;
       const fotoInput = document.getElementById('foto');
+      let fotoData = null;
       if (fotoInput.files[0]) {
-        fotoData = await new Promise(resolve => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.readAsDataURL(fotoInput.files[0]);
+        fotoData = await new Promise(r => {
+          const a = new FileReader();
+          a.onload = e => r(e.target.result);
+          a.readAsDataURL(fotoInput.files[0]);
         });
       }
 
-      // Crear nueva incidencia
       const nueva = {
         id: Date.now().toString(),
         referencia: generarRef(),
@@ -260,19 +188,13 @@
         cerrada: false
       };
 
-      // Añadir localmente
       incidencias.push(nueva);
-
-      // Guardar en Google Sheets
       await guardarEnSheet(nueva);
-
-      // Confirmar y limpiar
       alert(`✅ Incidencia creada: ${nueva.referencia}`);
       document.getElementById('formIncidencia').reset();
       render();
     });
 
-    // Renderizar lista de incidencias
     function render() {
       renderLista('#listaAbiertas', i => !i.cerrada);
       renderLista('#listaCerradas', i => i.cerrada === 'true');
@@ -282,47 +204,29 @@
       const el = document.querySelector(selector);
       if (!el) return;
       el.innerHTML = '';
-
       const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
       if (lista.length === 0) {
         el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
         return;
       }
-
       lista.forEach(i => {
-        const fecha = new Date(i.fechaApertura).toLocaleDateString('es-ES');
         const div = document.createElement('div');
-        div.className = 'col-md-6 col-lg-4 mb-3';
+        div.className = 'col-md-6 mb-3';
         div.innerHTML = `
-          <div class="card h-100">
+          <div class="card">
             <div class="card-body">
               <h6 class="text-muted">${i.referencia}</h6>
               <h5>${i.centro}</h5>
               <p class="small">${i.descripcion}</p>
-              <p><strong>Apertura:</strong> ${fecha}</p>
-              ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
-              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
-              <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
             </div>
           </div>
         `;
         el.appendChild(div);
       });
-
-      // Evento para ver foto
-      document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
-        btn.addEventListener('click', e => {
-          const img = e.target.parentElement.querySelector('.photo-preview');
-          document.getElementById('modalImage').src = img.dataset.img;
-          new bootstrap.Modal(document.getElementById('photoModal')).show();
-        });
-      });
     }
 
-    // Cargar datos al iniciar
     window.addEventListener('load', async () => {
-      const data = await cargarDeSheet();
-      incidencias = Array.isArray(data) ? data : [];
+      incidencias = await cargarDeSheet();
       render();
     });
   </script>
