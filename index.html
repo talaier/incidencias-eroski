@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gestión de Incidencias - EROSKI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
   <style>
     body { background-color: #f8f9fa; padding-top: 20px; }
     .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -66,19 +67,56 @@
                 <select class="form-select" id="centro" required>
                   <option value="">Selecciona centro</option>
                   <option>Eroski Binissalem I (6705)</option>
+                  <option>Eroski Binissalen II (6096)</option>
                   <option>Eroski NOVA PARIS-CALVIA (7490)</option>
+                  <option>Eroski Secar (6495)</option>
                   <option>Eroski Son Moix (6801)</option>
+                  <option>Eroski Dragonera (6350)</option>
                   <option>Eroski La Puebla (6362)</option>
+                  <option>La Puebla 2 (6067)</option>
                   <option>Eroski Bendinat (6752)</option>
+                  <option>Eroski Indioteria (6514)</option>
+                  <option>Eroski Son Cladera (6538)</option>
+                  <option>Eroski Mercat de Llevant (6729)</option>
+                  <option>Eroski Portixol (6753)</option>
+                  <option>Eroski Can Pastilla (6806)</option>
+                  <option>Eroski Borne (6831)</option>
                   <option>Eroski Santa María I (6309)</option>
+                  <option>Eroski Santa María II (6694)</option>
                   <option>Eroski Escorxador (6363)</option>
+                  <option>Eroski Coll I (6376)</option>
+                  <option>Eroski Coll II (6718)</option>
                   <option>Eroski Palmanova (6537)</option>
+                  <option>Eroski Santanvi (6713)</option>
                   <option>Eroski Colonia (6499)</option>
+                  <option>Eroski Médico Jose Darder (6749)</option>
+                  <option>Eroski Consell (6643)</option>
+                  <option>Eroski Soller II (6692)</option>
                   <option>Eroski Capitán Salom (6892)</option>
+                  <option>Eroski Campos II (6653)</option>
                   <option>Eroski Llucmajor (6759)</option>
+                  <option>Eroski Pascual Ribot (6882)</option>
                   <option>Eroski Alaró (6719)</option>
-                  <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
+                  <option>Eroski Lloseta (6308)</option>
+                  <option>Eroski Capitán Salom II (7558)</option>
+                  <option>Eroski Son Rullan (6439)</option>
+                  <option>Eroski Son Ferriol (6714)</option>
+                  <option>Eroski Pascual Ribot II (7557)</option>
+                  <option>Eroski Fábrica (6983)</option>
+                  <option>Eroski Archiduque (6625)</option>
+                  <option>Eroski Navegación (7503)</option>
+                  <option>Eroski Inca (6398)</option>
+                  <option>Eroski Inca IV NORTE (6066)</option>
+                  <option>Eroski Andrea Doria (6574)</option>
+                  <option>Eroski Algaida (6726)</option>
+                  <option>Eroski Manacor I (6377)</option>
+                  <option>Eroski Industria (6328)</option>
+                  <option>Eroski MERCAT NOU (6755)</option>
+                  <option>Eroski Pérez Galdos (6756)</option>
+                  <option>Eroski Pere Garau (6793)</option>
                   <option>Eroski Muro (6909)</option>
+                  <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
+                  <option>Eroski Reyes Católicos (6360)</option>
                   <option>Eroski Sa Cabaneta (6852)</option>
                 </select>
               </div>
@@ -110,8 +148,8 @@
       <!-- ABIERTAS -->
       <div class="tab-pane fade" id="abiertas">
         <div class="search-section mb-3">
-          <input type="text" class="form-control form-control-sm mb-2" id="searchOpen" placeholder="Buscar..." />
-          <button class="btn btn-sm btn-secondary w-100" id="btnSearchOpen">Filtrar</button>
+          <input type="text" class="form-control form-control-sm mb-2" id="searchOpen" placeholder="Buscar en abiertas..." />
+          <button class="btn btn-sm btn-secondary w-100" id="btnSearchOpen">Buscar</button>
         </div>
         <div id="listaAbiertas" class="row"></div>
       </div>
@@ -119,8 +157,8 @@
       <!-- CERRADAS -->
       <div class="tab-pane fade" id="cerradas">
         <div class="search-section mb-3">
-          <input type="text" class="form-control form-control-sm mb-2" id="searchClosed" placeholder="Buscar..." />
-          <button class="btn btn-sm btn-secondary w-100" id="btnSearchClosed">Filtrar</button>
+          <input type="text" class="form-control form-control-sm mb-2" id="searchClosed" placeholder="Buscar en cerradas..." />
+          <button class="btn btn-sm btn-secondary w-100" id="btnSearchClosed">Buscar</button>
         </div>
         <div id="listaCerradas" class="row"></div>
       </div>
@@ -128,11 +166,11 @@
   </div>
 
   <!-- MODAL FOTO -->
-  <div class="modal fade" id="photoModal">
+  <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body text-center">
-          <img id="modalImage" class="img-fluid" src="" alt="Foto"/>
+          <img id="modalImage" class="img-fluid" src="" alt="Foto de incidencia"/>
         </div>
       </div>
     </div>
@@ -142,7 +180,7 @@
   <script>
     let incidencias = [];
 
-    // 🔗 URLs - CAMBIA ESTAS POR LAS TUYAS
+    // 🔗 COPIA AQUÍ TUS URLs REALES
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOeeftmp0z9C-aIM25jGVFp2Jn9vn67NfEn7YPuBalPxc1pYxcsFMWyXUEOkemRB8zrZ6BZMdyIOoC/pubhtml';
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-qVJcOhtft8zC11R8NSgzZojavoJ--vfoytfYikeuXK0syLhWnfAk0XZESbf03M4Z/exec';
 
@@ -154,9 +192,14 @@
         const headers = lines[0].split('\t');
         return lines.slice(1).map(line => {
           const values = line.split('\t');
-          return headers.reduce((obj, h, i) => ({ ...obj, [h.trim()]: values[i] || '' }), {});
+          const obj = {};
+          headers.forEach((h, i) => {
+            obj[h.trim()] = values[i] ? values[i].trim() : '';
+          });
+          return obj;
         });
       } catch (e) {
+        console.error('Error al cargar de Google Sheets', e);
         return [];
       }
     }
@@ -168,20 +211,32 @@
           mode: 'no-cors',
           body: JSON.stringify(inc)
         });
-      } catch (e) {}
+      } catch (e) {
+        console.error('Error al guardar en Google Sheets', e);
+      }
     }
 
     function generarRef() {
       const d = new Date();
       const date = d.getFullYear().toString().slice(-2) +
-                   String(d.getMonth()+1).padStart(2,'0') +
-                   String(d.getDate()).padStart(2,'0');
+                   String(d.getMonth() + 1).padStart(2, '0') +
+                   String(d.getDate()).padStart(2, '0');
       const count = incidencias.filter(i => i.referencia.startsWith(date)).length + 1;
-      return `${date}-${String(count).padStart(2,'0')}`;
+      return `${date}-${String(count).padStart(2, '0')}`;
     }
 
     document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const fotoInput = document.getElementById('foto');
+      let fotoData = null;
+      if (fotoInput.files[0]) {
+        const reader = new FileReader();
+        reader.readAsDataURL(fotoInput.files[0]);
+        fotoData = await new Promise(resolve => {
+          reader.onload = () => resolve(reader.result);
+        });
+      }
+
       const nueva = {
         id: Date.now().toString(),
         referencia: generarRef(),
@@ -189,51 +244,56 @@
         solicitadoPor: document.getElementById('solicitadoPor').value,
         descripcion: document.getElementById('descripcion').value,
         materiales: document.getElementById('materiales').value,
-        foto: document.getElementById('foto').files[0] ? await new Promise(r => {
-          const a = new FileReader();
-          a.onload = e => r(e.target.result);
-          a.readAsDataURL(document.getElementById('foto').files[0]);
-        }) : null,
+        foto: fotoData,
         fechaApertura: new Date().toISOString(),
         fechaCierre: null,
         cerrada: false
       };
+
       incidencias.push(nueva);
       await guardarEnSheet(nueva);
-      alert(`Creada: ${nueva.referencia}`);
+      alert(`✅ Incidencia creada: ${nueva.referencia}`);
       document.getElementById('formIncidencia').reset();
       render();
     });
 
     function render() {
       renderLista('#listaAbiertas', i => !i.cerrada);
-      renderLista('#listaCerradas', i => i.cerrada);
+      renderLista('#listaCerradas', i => i.cerrada === 'true');
     }
 
     function renderLista(selector, filtro) {
       const el = document.querySelector(selector);
+      if (!el) return;
       el.innerHTML = '';
       const lista = incidencias.filter(filtro);
+      if (lista.length === 0) {
+        el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
+        return;
+      }
       lista.forEach(i => {
         const div = document.createElement('div');
         div.className = 'col-md-6 mb-3';
         div.innerHTML = `
-          <div class="card">
+          <div class="card h-100">
             <div class="card-body">
-              <h6>${i.referencia}</h6>
-              <p><strong>${i.centro}</strong></p>
+              <h6 class="text-muted">${i.referencia}</h6>
+              <h5>${i.centro}</h5>
               <p class="small">${i.descripcion}</p>
+              <p><strong>Apertura:</strong> ${new Date(i.fechaApertura).toLocaleDateString()}</p>
+              ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
               ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
-              <button class="btn btn-sm btn-info ver-foto" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
+              <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
             </div>
           </div>
         `;
         el.appendChild(div);
       });
 
-      document.querySelectorAll('.ver-foto:not([disabled])').forEach(btn => {
+      document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
         btn.addEventListener('click', e => {
-          document.getElementById('modalImage').src = e.target.previousElementSibling.dataset.img;
+          const img = e.target.parentElement.querySelector('.photo-preview');
+          document.getElementById('modalImage').src = img.dataset.img;
           new bootstrap.Modal(document.getElementById('photoModal')).show();
         });
       });
