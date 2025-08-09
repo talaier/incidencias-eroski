@@ -162,7 +162,9 @@
       const date = d.getFullYear().toString().slice(-2) +
                    String(d.getMonth() + 1).padStart(2, '0') +
                    String(d.getDate()).padStart(2, '0');
-      const count = (incidencias || []).filter(i => i.referencia?.startsWith(date)).length + 1;
+      const count = (Array.isArray(incidencias) ? incidencias : [])
+        .filter(i => i.referencia && typeof i.referencia === 'string' && i.referencia.startsWith(date))
+        .length + 1;
       return `${date}-${String(count).padStart(2, '0')}`;
     }
 
@@ -207,7 +209,7 @@
       const el = document.querySelector(selector);
       if (!el) return;
       el.innerHTML = '';
-      const lista = (incidencias || []).filter(filtro);
+      const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
       if (lista.length === 0) {
         el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
         return;
