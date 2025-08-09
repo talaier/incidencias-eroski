@@ -189,15 +189,56 @@
         const res = await fetch(SHEET_CSV_URL);
         const csv = await res.text();
         const lines = csv.trim().split('\n');
-        const headers = lines[0].split('\t');
-        return lines.slice(1).map(line => {
-          const values = line.split('\t');
-          const obj = {};
-          headers.forEach((h, i) => {
-            obj[h.trim()] = values[i] ? values[i].trim() : '';
-          });
-          return obj;
+        async function cargarDeSheet() {
+  try {
+    const res = await fetch(SHEET_CSV_URL);
+    const csv = await res.text();
+    const lines = csv.trim().split('\n');
+    
+    // Usa coma como separador (no tabulador)
+    const headers = lines[0].split(',').map(h => h.trim());
+    
+    const data = lines.slice(1)
+      .filter(line => line.trim() && line.split(',').some(cell => cell.trim()))
+      .map(line => {
+        const values = line.split(',').map(v => v.trim());
+        const obj = {};
+        
+        headers.forEach((h, i) => {
+          // Aseguramos que el valor exista
+          obj[h] = values[i] || '';
         });
+
+        // ✅ Validar y reparar fechas
+        if (obj.fechaApertura && !obj.fechaApertura.includes('T')) {
+          obj.fechaApertura = new Date(obj.fechaApertura).toISOString() || new Date().toISOString();
+        }
+
+        // ✅ Asegurar referencia
+        if (!obj.referencia || obj.referencia === 'undefined') {
+          const d = new Date(obj.fechaApertura);
+          const dateStr = d.getFullYear().toString().slice(-2) +
+                          String(d.getMonth() + 1).padStart(2, '0') +
+                          String(d.getDate()).padStart(2, '0');
+          obj.referencia = `${dateStr}-01`;
+        }
+
+        // ✅ Booleano correcto para "cerrada"
+        if (obj.cerrada) {
+          obj.cerrada = obj.cerrada === 'true' || obj.cerrada === true;
+        } else {
+          obj.cerrada = false;
+        }
+
+        return obj;
+      });
+
+    return data;
+  } catch (e) {
+    console.error('Error al cargar de Google Sheets', e);
+    return [];
+  }
+}
       } catch (e) {
         console.error('Error al cargar de Google Sheets', e);
         return [];
@@ -216,19 +257,19 @@
       }
     }
 
-    function generarRef() {
+      function generarRef() {
       const d = new Date();
-      const date = d.getFullYear().toString().slice(-2) +
-                  String(d.getMonth() + 1).padStart(2, '0') +
-                  String(d.getDate()).padStart(2, '0');
+      const dateStr = d.getFullYear().toString().slice(-2) +
+                      String(d.getMonth() + 1).padStart(2, '0') +
+                      String(d.getDate()).padStart(2, '0');
 
       const count = incidencias.filter(i => 
         i.referencia && 
         typeof i.referencia === 'string' && 
-        i.referencia.startsWith(date)
+        i.referencia.startsWith(dateStr)
       ).length + 1;
 
-      return `${date}-${String(count).padStart(2, '0')}`;
+      return `${dateStr}-${String(count).padStart(2, '0')}`;
     }
 
     document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
