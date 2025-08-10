@@ -14,34 +14,61 @@
 
   <!-- 🔐 LOGIN LOCAL -->
   <script>
-    const ACCESS_PASSWORD = '123';
-    const ACCESS_USER = 'lcc';
+  const ACCESS_PASSWORD = '123';
+  const ACCESS_USER = 'lcc';
 
-    function requestAccess() {
-      const maxAttempts = 3;
-      let attempts = 0;
-      while (attempts < maxAttempts) {
-        const user = prompt('🔐 Acceso restringido\nUsuario:', '');
-        if (user === null) {
-          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-          return false;
-        }
-        const pass = prompt('🔐 Contraseña:', '');
-        if (pass === null) {
-          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-          return false;
-        }
-        if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
-          return true;
-        }
-        attempts++;
-        alert(`Contraseña incorrecta. Intento ${attempts}/${maxAttempts}`);
-      }
-      document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso bloqueado</h1>';
-      return false;
+  // Verifica si ya está autenticado
+  function isAuthenticated() {
+    return localStorage.getItem('auth') === 'true';
+  }
+
+  // Guarda que el usuario está autenticado
+  function setAuthenticated() {
+    localStorage.setItem('auth', 'true');
+  }
+
+  // Elimina la autenticación (opcional: para cerrar sesión)
+  function logout() {
+    localStorage.removeItem('auth');
+    location.reload();
+  }
+
+  // Solicita acceso solo si no está autenticado
+  function requestAccess() {
+    if (isAuthenticated()) {
+      return true;
     }
-    if (!requestAccess()) throw new Error('Acceso denegado');
-  </script>
+
+    const maxAttempts = 3;
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      const user = prompt('🔐 Acceso restringido\nUsuario:', '');
+      if (user === null) {
+        document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
+        return false;
+      }
+      const pass = prompt('🔐 Contraseña:', '');
+      if (pass === null) {
+        document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
+        return false;
+      }
+      if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
+        setAuthenticated();
+        return true;
+      }
+      attempts++;
+      alert(`Contraseña incorrecta. Intento ${attempts}/${maxAttempts}`);
+    }
+    document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso bloqueado</h1>';
+    return false;
+  }
+
+  // Ejecuta al cargar
+  if (!requestAccess()) {
+    throw new Error('Acceso denegado');
+  }
+</script>
 </head>
 <body>
   <div class="container">
