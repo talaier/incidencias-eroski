@@ -64,7 +64,6 @@
     </ul>
 
     <div class="tab-content">
-      <!-- NUEVA -->
       <div class="tab-pane fade show active" id="nueva">
         <div class="card">
           <div class="card-body">
@@ -115,19 +114,16 @@
         </div>
       </div>
 
-      <!-- ABIERTAS -->
       <div class="tab-pane fade" id="abiertas">
         <div id="listaAbiertas" class="row"></div>
       </div>
 
-      <!-- CERRADAS -->
       <div class="tab-pane fade" id="cerradas">
         <div id="listaCerradas" class="row"></div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL FOTO -->
   <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -142,8 +138,8 @@
   <script>
     let incidencias = [];
 
-    // 🔗 COPIA TUS URLS AQUÍ
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOeeftmp0z9C-aIM25jGVFp2Jn9vn67NfEn7YPuBalPxc1pYxcsFMWyXUEOkemRB8zrZ6BZMdyIOoC/pub?output=csv';
+    // ✅ COPIA AQUÍ TUS URLS
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pubhtml';
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-qVJcOhtft8zC11R8NSgzZojavoJ--vfoytfYikeuXK0syLhWnfAk0XZESbf03M4Z/exec';
 
     async function cargarDeSheet() {
@@ -262,7 +258,6 @@
         el.appendChild(div);
       });
 
-      // Eventos
       document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
         btn.addEventListener('click', e => {
           const img = e.target.parentElement.querySelector('.photo-preview');
