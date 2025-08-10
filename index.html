@@ -12,63 +12,47 @@
     .photo-preview { max-width: 100px; margin: 5px; }
   </style>
 
-  <!-- 🔐 LOGIN LOCAL -->
+  <!-- 🔐 LOGIN CON MEMORIA -->
   <script>
-  const ACCESS_PASSWORD = '123';
-  const ACCESS_USER = 'lcc';
+    const ACCESS_PASSWORD = '123';
+    const ACCESS_USER = 'lcc';
 
-  // Verifica si ya está autenticado
-  function isAuthenticated() {
-    return localStorage.getItem('auth') === 'true';
-  }
-
-  // Guarda que el usuario está autenticado
-  function setAuthenticated() {
-    localStorage.setItem('auth', 'true');
-  }
-
-  // Elimina la autenticación (opcional: para cerrar sesión)
-  function logout() {
-    localStorage.removeItem('auth');
-    location.reload();
-  }
-
-  // Solicita acceso solo si no está autenticado
-  function requestAccess() {
-    if (isAuthenticated()) {
-      return true;
+    function isAuthenticated() {
+      return localStorage.getItem('auth') === 'true';
     }
 
-    const maxAttempts = 3;
-    let attempts = 0;
-
-    while (attempts < maxAttempts) {
-      const user = prompt('🔐 Acceso restringido\nUsuario:', '');
-      if (user === null) {
-        document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-        return false;
-      }
-      const pass = prompt('🔐 Contraseña:', '');
-      if (pass === null) {
-        document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-        return false;
-      }
-      if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
-        setAuthenticated();
-        return true;
-      }
-      attempts++;
-      alert(`Contraseña incorrecta. Intento ${attempts}/${maxAttempts}`);
+    function setAuthenticated() {
+      localStorage.setItem('auth', 'true');
     }
-    document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso bloqueado</h1>';
-    return false;
-  }
 
-  // Ejecuta al cargar
-  if (!requestAccess()) {
-    throw new Error('Acceso denegado');
-  }
-</script>
+    function requestAccess() {
+      if (isAuthenticated()) return true;
+
+      const maxAttempts = 3;
+      let attempts = 0;
+      while (attempts < maxAttempts) {
+        const user = prompt('🔐 Acceso restringido\nUsuario:', '');
+        if (user === null) {
+          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
+          return false;
+        }
+        const pass = prompt('🔐 Contraseña:', '');
+        if (pass === null) {
+          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
+          return false;
+        }
+        if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
+          setAuthenticated();
+          return true;
+        }
+        attempts++;
+        alert(`Contraseña incorrecta. Intento ${attempts}/${maxAttempts}`);
+      }
+      document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso bloqueado</h1>';
+      return false;
+    }
+    if (!requestAccess()) throw new Error('Acceso denegado');
+  </script>
 </head>
 <body>
   <div class="container">
@@ -80,6 +64,7 @@
     </ul>
 
     <div class="tab-content">
+      <!-- NUEVA -->
       <div class="tab-pane fade show active" id="nueva">
         <div class="card">
           <div class="card-body">
@@ -130,12 +115,25 @@
         </div>
       </div>
 
+      <!-- ABIERTAS -->
       <div class="tab-pane fade" id="abiertas">
         <div id="listaAbiertas" class="row"></div>
       </div>
 
+      <!-- CERRADAS -->
       <div class="tab-pane fade" id="cerradas">
         <div id="listaCerradas" class="row"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FOTO -->
+  <div class="modal fade" id="photoModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <img id="modalImage" class="img-fluid" src="" alt="Foto"/>
+        </div>
       </div>
     </div>
   </div>
@@ -144,7 +142,7 @@
   <script>
     let incidencias = [];
 
-    // ✅ COPIA AQUÍ TUS URLS
+    // 🔗 COPIA TUS URLS AQUÍ
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOeeftmp0z9C-aIM25jGVFp2Jn9vn67NfEn7YPuBalPxc1pYxcsFMWyXUEOkemRB8zrZ6BZMdyIOoC/pub?output=csv';
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-qVJcOhtft8zC11R8NSgzZojavoJ--vfoytfYikeuXK0syLhWnfAk0XZESbf03M4Z/exec';
 
@@ -212,7 +210,7 @@
         foto: fotoData,
         fechaApertura: new Date().toISOString(),
         fechaCierre: null,
-        cerrada: false
+        cerrada: 'false'
       };
 
       incidencias.push(nueva);
@@ -223,7 +221,7 @@
     });
 
     function render() {
-      renderLista('#listaAbiertas', i => !i.cerrada);
+      renderLista('#listaAbiertas', i => i.cerrada === 'false');
       renderLista('#listaCerradas', i => i.cerrada === 'true');
     }
 
@@ -231,12 +229,17 @@
       const el = document.querySelector(selector);
       if (!el) return;
       el.innerHTML = '';
+
       const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
       if (lista.length === 0) {
         el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
         return;
       }
+
       lista.forEach(i => {
+        const fechaApertura = new Date(i.fechaApertura).toLocaleDateString();
+        const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString() : '—';
+
         const div = document.createElement('div');
         div.className = 'col-md-6 mb-3';
         div.innerHTML = `
@@ -245,15 +248,21 @@
               <h6 class="text-muted">${i.referencia}</h6>
               <h5>${i.centro}</h5>
               <p class="small">${i.descripcion}</p>
+              <p><strong>Apertura:</strong> ${fechaApertura}</p>
+              <p><strong>Cierre:</strong> ${fechaCierre}</p>
+              ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
               ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
               <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
-              <button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>
+              ${i.cerrada === 'false' ? 
+                `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>` : 
+                `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>`}
             </div>
           </div>
         `;
         el.appendChild(div);
       });
 
+      // Eventos
       document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
         btn.addEventListener('click', e => {
           const img = e.target.parentElement.querySelector('.photo-preview');
@@ -267,8 +276,21 @@
           if (confirm('¿Cerrar esta incidencia?')) {
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
-            inc.cerrada = true;
+            inc.cerrada = 'true';
             inc.fechaCierre = new Date().toISOString();
+            guardarEnSheet(inc);
+            render();
+          }
+        });
+      });
+
+      document.querySelectorAll('.reopen-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (confirm('¿Reabrir esta incidencia?')) {
+            const id = e.target.dataset.id;
+            const inc = incidencias.find(i => i.id === id);
+            inc.cerrada = 'false';
+            inc.fechaCierre = null;
             guardarEnSheet(inc);
             render();
           }
