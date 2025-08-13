@@ -75,6 +75,58 @@
         color: white;
     }
 </style>
+
+<!-- 🔐 SCRIPT DE LOGIN CON MEMORIA -->
+<script>
+  const ACCESS_USER = 'lcc';
+  const ACCESS_PASSWORD = '123';
+
+  // Verifica si ya está autenticado
+  function isAuthenticated() {
+    return localStorage.getItem('incidencias-auth') === 'true';
+  }
+
+  // Marca como autenticado
+  function setAuthenticated() {
+    localStorage.setItem('incidencias-auth', 'true');
+  }
+
+  // Solicita login solo si no está autenticado
+  function requestAccess() {
+    if (isAuthenticated()) return true;
+
+    const maxAttempts = 3;
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      const user = prompt('🔐 Acceso restringido\nUsuario:', '');
+      if (user === null) {
+        document.body.innerHTML = '<h1 style="text-align:center; color:#d32f2f; margin-top:50px;">Acceso denegado</h1>';
+        return false;
+      }
+      const pass = prompt('🔐 Contraseña:', '');
+      if (pass === null) {
+        document.body.innerHTML = '<h1 style="text-align:center; color:#d32f2f; margin-top:50px;">Acceso denegado</h1>';
+        return false;
+      }
+      if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
+        setAuthenticated();
+        return true;
+      }
+      attempts++;
+      alert(`Contraseña incorrecta. Intento ${attempts}/${maxAttempts}`);
+    }
+
+    document.body.innerHTML = '<h1 style="text-align:center; color:#d32f2f; margin-top:50px;">🚫 Acceso bloqueado</h1>';
+    return false;
+  }
+
+  // Ejecuta al cargar
+  if (!requestAccess()) {
+    throw new Error('Acceso denegado');
+  }
+</script>
+
 </head>
 <body>
 
@@ -235,30 +287,38 @@ document.getElementById('incidenciaForm').addEventListener('submit', async (e) =
 });
 
 async function cargarIncidencias() {
-    const res = await fetch(SHEET_CSV_URL);
-    const data = await res.text();
-    const rows = data.split('\n').map(r => r.split(','));
-    const abiertas = rows.filter(r => r[9] && r[9].trim().toLowerCase() !== 'sí');
-    const cerradas = rows.filter(r => r[9] && r[9].trim().toLowerCase() === 'sí');
+    try {
+        const res = await fetch(SHEET_CSV_URL);
+        const data = await res.text();
+        const rows = data.split('\n').map(r => r.split(','));
+        const headers = rows[0];
+        const dataRows = rows.slice(1).filter(r => r.length > 1);
 
-    const tbodyAbiertas = document.querySelector('#tablaAbiertas tbody');
-    const tbodyCerradas = document.querySelector('#tablaCerradas tbody');
-    tbodyAbiertas.innerHTML = '';
-    tbodyCerradas.innerHTML = '';
+        const abiertas = dataRows.filter(r => r[9] && r[9].trim().toLowerCase() !== 'sí');
+        const cerradas = dataRows.filter(r => r[9] && r[9].trim().toLowerCase() === 'sí');
 
-    abiertas.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td><a href="${r[6]}" target="_blank">Ver</a></td><td>${r[7]}</td>`;
-        tbodyAbiertas.appendChild(tr);
-    });
+        const tbodyAbiertas = document.querySelector('#tablaAbiertas tbody');
+        const tbodyCerradas = document.querySelector('#tablaCerradas tbody');
+        tbodyAbiertas.innerHTML = '';
+        tbodyCerradas.innerHTML = '';
 
-    cerradas.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td><a href="${r[6]}" target="_blank">Ver</a></td><td>${r[8]}</td>`;
-        tbodyCerradas.appendChild(tr);
-    });
+        abiertas.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${r[1] || '-'}</td><td>${r[2] || '-'}</td><td>${r[3] || '-'}</td><td>${r[4] || '-'}</td><td>${r[5] || '-'}</td><td>${r[6] ? `<a href="${r[6]}" target="_blank">Ver</a>` : '-'}</td><td>${r[7] || '-'}</td>`;
+            tbodyAbiertas.appendChild(tr);
+        });
+
+        cerradas.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${r[1] || '-'}</td><td>${r[2] || '-'}</td><td>${r[3] || '-'}</td><td>${r[4] || '-'}</td><td>${r[5] || '-'}</td><td>${r[6] ? `<a href="${r[6]}" target="_blank">Ver</a>` : '-'}</td><td>${r[8] || '-'}</td>`;
+            tbodyCerradas.appendChild(tr);
+        });
+    } catch (e) {
+        console.error('Error al cargar incidencias:', e);
+    }
 }
 
+// Cargar al inicio
 cargarIncidencias();
 </script>
 
