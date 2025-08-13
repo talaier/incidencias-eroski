@@ -15,8 +15,11 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #f2f2f2; }
-    .container { display: flex; flex-wrap: wrap; gap: 20px; }
-    .table-container { flex: 1; min-width: 300px; }
+    .tabs { display: flex; margin-top: 20px; border-bottom: 2px solid #ccc; }
+    .tab { padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #eee; margin-right: 5px; border-radius: 5px 5px 0 0; }
+    .tab.active { background: #fff; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 </style>
 </head>
 <body>
@@ -25,7 +28,8 @@
 
 <form id="incidenciaForm">
     <label for="centro">Centro:</label>
-    <select id="centro" name="centro" required>
+    <input type="text" id="buscarCentro" placeholder="Buscar centro...">
+    <select id="centro" name="centro" required size="5">
         <option value="">Selecciona centro</option>
         <option>Eroski Binissalem I (6705)</option>
         <option>Eroski Binissalen II (6096)</option>
@@ -96,50 +100,71 @@
     <button type="submit">Crear incidencia</button>
 </form>
 
-<div class="container">
-    <div class="table-container">
-        <h2>Incidencias Abiertas</h2>
-        <table id="tablaAbiertas">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Referencia</th>
-                    <th>Centro</th>
-                    <th>Solicitado Por</th>
-                    <th>Descripción</th>
-                    <th>Materiales</th>
-                    <th>Foto</th>
-                    <th>Fecha Apertura</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+<div class="tabs">
+    <div class="tab active" data-tab="abiertas">Incidencias Abiertas</div>
+    <div class="tab" data-tab="cerradas">Incidencias Cerradas</div>
+</div>
 
-    <div class="table-container">
-        <h2>Incidencias Cerradas</h2>
-        <table id="tablaCerradas">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Referencia</th>
-                    <th>Centro</th>
-                    <th>Solicitado Por</th>
-                    <th>Descripción</th>
-                    <th>Materiales</th>
-                    <th>Foto</th>
-                    <th>Fecha Apertura</th>
-                    <th>Fecha Cierre</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+<div id="abiertas" class="tab-content active">
+    <table id="tablaAbiertas">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Referencia</th>
+                <th>Centro</th>
+                <th>Solicitado Por</th>
+                <th>Descripción</th>
+                <th>Materiales</th>
+                <th>Foto</th>
+                <th>Fecha Apertura</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div id="cerradas" class="tab-content">
+    <table id="tablaCerradas">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Referencia</th>
+                <th>Centro</th>
+                <th>Solicitado Por</th>
+                <th>Descripción</th>
+                <th>Materiales</th>
+                <th>Foto</th>
+                <th>Fecha Apertura</th>
+                <th>Fecha Cierre</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 
 <script>
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?gid=0&single=true&output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyof-QWtneajf72yUr7CoSGJBH6Chz_U_kArf7j87UPtINybSxYodZigGmZRkltROjVzw/exec';
+
+// Filtro de búsqueda en el select
+document.getElementById('buscarCentro').addEventListener('input', function() {
+    let filter = this.value.toLowerCase();
+    let options = document.getElementById('centro').options;
+    for (let i = 0; i < options.length; i++) {
+        let txt = options[i].text.toLowerCase();
+        options[i].style.display = txt.includes(filter) ? '' : 'none';
+    }
+});
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById(this.dataset.tab).classList.add('active');
+    });
+});
 
 document.getElementById("incidenciaForm").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -157,10 +182,7 @@ document.getElementById("incidenciaForm").addEventListener("submit", async funct
                 materiales: formData.get("materiales"),
                 foto: base64
             };
-            await fetch(APPS_SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            });
+            await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
             alert("Incidencia creada correctamente");
             location.reload();
         };
@@ -173,10 +195,7 @@ document.getElementById("incidenciaForm").addEventListener("submit", async funct
             materiales: formData.get("materiales"),
             foto: ""
         };
-        await fetch(APPS_SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(payload)
-        });
+        await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
         alert("Incidencia creada correctamente");
         location.reload();
     }
