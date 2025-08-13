@@ -3,120 +3,109 @@
 <head>
 <meta charset="UTF-8">
 <title>Gestión de Incidencias Eroski</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
     h1 { text-align: center; }
-    form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
-    label { font-weight: bold; display: block; margin-top: 10px; }
-    select, input, textarea { width: 100%; padding: 8px; margin-top: 5px; }
-    button { margin-top: 15px; padding: 10px; background: #28a745; color: white; border: none; cursor: pointer; }
-    button:hover { background: #218838; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #f2f2f2; }
-    .tabs { display: flex; margin-top: 20px; border-bottom: 2px solid #ccc; }
-    .tab { padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #eee; margin-right: 5px; border-radius: 5px 5px 0 0; }
-    .tab.active { background: #fff; font-weight: bold; }
-    .tab-content { display: none; }
+    .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+    .tab { padding: 10px 20px; cursor: pointer; background: #ddd; margin: 0 2px; border-radius: 5px 5px 0 0; }
+    .tab.active { background: #fff; font-weight: bold; border-bottom: 2px solid #fff; }
+    .tab-content { display: none; background: #fff; padding: 20px; border-radius: 0 5px 5px 5px; }
     .tab-content.active { display: block; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    select, input, textarea { padding: 5px; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; border: 1px solid #ccc; }
+    th { background: #eee; }
+    button { padding: 8px 15px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+    button:hover { background: #0056b3; }
 </style>
 </head>
 <body>
 
 <h1>Gestión de Incidencias Eroski</h1>
 
-<form id="incidenciaForm">
-    <label for="centro">Centro:</label>
-    <input type="text" id="buscarCentro" placeholder="Buscar centro...">
-    <select id="centro" name="centro" required size="5">
-        <option value="">Selecciona centro</option>
-        <option>Eroski Binissalem I (6705)</option>
-        <option>Eroski Binissalen II (6096)</option>
-        <option>Eroski NOVA PARIS-CALVIA (7490)</option>
-        <option>Eroski Secar (6495)</option>
-        <option>Eroski Son Moix (6801)</option>
-        <option>Eroski Dragonera (6350)</option>
-        <option>Eroski La Puebla (6362)</option>
-        <option>La Puebla 2 (6067)</option>
-        <option>Eroski Bendinat (6752)</option>
-        <option>Eroski Indioteria (6514)</option>
-        <option>Eroski Son Cladera (6538)</option>
-        <option>Eroski Mercat de Llevant (6729)</option>
-        <option>Eroski Portixol (6753)</option>
-        <option>Eroski Can Pastilla (6806)</option>
-        <option>Eroski Borne (6831)</option>
-        <option>Eroski Santa María I (6309)</option>
-        <option>Eroski Santa María II (6694)</option>
-        <option>Eroski Escorxador (6363)</option>
-        <option>Eroski Coll I (6376)</option>
-        <option>Eroski Coll II (6718)</option>
-        <option>Eroski Palmanova (6537)</option>
-        <option>Eroski Santanvi (6713)</option>
-        <option>Eroski Colonia (6499)</option>
-        <option>Eroski Médico Jose Darder (6749)</option>
-        <option>Eroski Consell (6643)</option>
-        <option>Eroski Soller II (6692)</option>
-        <option>Eroski Capitán Salom (6892)</option>
-        <option>Eroski Campos II (6653)</option>
-        <option>Eroski Llucmajor (6759)</option>
-        <option>Eroski Pascual Ribot (6882)</option>
-        <option>Eroski Alaró (6719)</option>
-        <option>Eroski Lloseta (6308)</option>
-        <option>Eroski Capitán Salom II (7558)</option>
-        <option>Eroski Son Rullan (6439)</option>
-        <option>Eroski Son Ferriol (6714)</option>
-        <option>Eroski Pascual Ribot II (7557)</option>
-        <option>Eroski Fábrica (6983)</option>
-        <option>Eroski Archiduque (6625)</option>
-        <option>Eroski Navegación (7503)</option>
-        <option>Eroski Inca (6398)</option>
-        <option>Eroski Inca IV NORTE (6066)</option>
-        <option>Eroski Andrea Doria (6574)</option>
-        <option>Eroski Algaida (6726)</option>
-        <option>Eroski Manacor I (6377)</option>
-        <option>Eroski Industria (6328)</option>
-        <option>Eroski MERCAT NOU (6755)</option>
-        <option>Eroski Pérez Galdos (6756)</option>
-        <option>Eroski Pere Garau (6793)</option>
-        <option>Eroski Muro (6909)</option>
-        <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
-        <option>Eroski Reyes Católicos (6360)</option>
-        <option>Eroski Sa Cabaneta (6852)</option>
-    </select>
-
-    <label for="solicitadoPor">Solicitado por:</label>
-    <input type="text" id="solicitadoPor" name="solicitadoPor" required>
-
-    <label for="descripcion">Descripción:</label>
-    <textarea id="descripcion" name="descripcion" required></textarea>
-
-    <label for="materiales">Materiales:</label>
-    <input type="text" id="materiales" name="materiales">
-
-    <label for="foto">Foto:</label>
-    <input type="file" id="foto" name="foto" accept="image/*">
-
-    <button type="submit">Crear incidencia</button>
-</form>
-
 <div class="tabs">
-    <div class="tab active" data-tab="abiertas">Incidencias Abiertas</div>
-    <div class="tab" data-tab="cerradas">Incidencias Cerradas</div>
+    <div class="tab active" data-tab="crear">Crear incidencia</div>
+    <div class="tab" data-tab="abiertas">Incidencias abiertas</div>
+    <div class="tab" data-tab="cerradas">Incidencias cerradas</div>
 </div>
 
-<div id="abiertas" class="tab-content active">
+<div id="crear" class="tab-content active">
+    <form id="incidenciaForm">
+        <input type="text" name="referencia" placeholder="Referencia" required>
+        
+        <select name="centro" required>
+            <option value="">Selecciona centro</option>
+            <option>Eroski Binissalem I (6705)</option>
+            <option>Eroski Binissalen II (6096)</option>
+            <option>Eroski NOVA PARIS-CALVIA (7490)</option>
+            <option>Eroski Secar (6495)</option>
+            <option>Eroski Son Moix (6801)</option>
+            <option>Eroski Dragonera (6350)</option>
+            <option>Eroski La Puebla (6362)</option>
+            <option>La Puebla 2 (6067)</option>
+            <option>Eroski Bendinat (6752)</option>
+            <option>Eroski Indioteria (6514)</option>
+            <option>Eroski Son Cladera (6538)</option>
+            <option>Eroski Mercat de Llevant (6729)</option>
+            <option>Eroski Portixol (6753)</option>
+            <option>Eroski Can Pastilla (6806)</option>
+            <option>Eroski Borne (6831)</option>
+            <option>Eroski Santa María I (6309)</option>
+            <option>Eroski Santa María II (6694)</option>
+            <option>Eroski Escorxador (6363)</option>
+            <option>Eroski Coll I (6376)</option>
+            <option>Eroski Coll II (6718)</option>
+            <option>Eroski Palmanova (6537)</option>
+            <option>Eroski Santanvi (6713)</option>
+            <option>Eroski Colonia (6499)</option>
+            <option>Eroski Médico Jose Darder (6749)</option>
+            <option>Eroski Consell (6643)</option>
+            <option>Eroski Soller II (6692)</option>
+            <option>Eroski Capitán Salom (6892)</option>
+            <option>Eroski Campos II (6653)</option>
+            <option>Eroski Llucmajor (6759)</option>
+            <option>Eroski Pascual Ribot (6882)</option>
+            <option>Eroski Alaró (6719)</option>
+            <option>Eroski Lloseta (6308)</option>
+            <option>Eroski Capitán Salom II (7558)</option>
+            <option>Eroski Son Rullan (6439)</option>
+            <option>Eroski Son Ferriol (6714)</option>
+            <option>Eroski Pascual Ribot II (7557)</option>
+            <option>Eroski Fábrica (6983)</option>
+            <option>Eroski Archiduque (6625)</option>
+            <option>Eroski Navegación (7503)</option>
+            <option>Eroski Inca (6398)</option>
+            <option>Eroski Inca IV NORTE (6066)</option>
+            <option>Eroski Andrea Doria (6574)</option>
+            <option>Eroski Algaida (6726)</option>
+            <option>Eroski Manacor I (6377)</option>
+            <option>Eroski Industria (6328)</option>
+            <option>Eroski MERCAT NOU (6755)</option>
+            <option>Eroski Pérez Galdos (6756)</option>
+            <option>Eroski Pere Garau (6793)</option>
+            <option>Eroski Muro (6909)</option>
+            <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
+            <option>Eroski Reyes Católicos (6360)</option>
+            <option>Eroski Sa Cabaneta (6852)</option>
+        </select>
+        
+        <input type="text" name="solicitadoPor" placeholder="Solicitado por" required>
+        <textarea name="descripcion" placeholder="Descripción" required></textarea>
+        <input type="text" name="materiales" placeholder="Materiales">
+        <input type="file" name="foto">
+        <button type="submit">Guardar incidencia</button>
+    </form>
+</div>
+
+<div id="abiertas" class="tab-content">
     <table id="tablaAbiertas">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Referencia</th>
                 <th>Centro</th>
-                <th>Solicitado Por</th>
                 <th>Descripción</th>
-                <th>Materiales</th>
-                <th>Foto</th>
-                <th>Fecha Apertura</th>
+                <th>Fecha apertura</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -127,15 +116,10 @@
     <table id="tablaCerradas">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Referencia</th>
                 <th>Centro</th>
-                <th>Solicitado Por</th>
                 <th>Descripción</th>
-                <th>Materiales</th>
-                <th>Foto</th>
-                <th>Fecha Apertura</th>
-                <th>Fecha Cierre</th>
+                <th>Fecha cierre</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -144,91 +128,4 @@
 
 <script>
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?gid=0&single=true&output=csv';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyof-QWtneajf72yUr7CoSGJBH6Chz_U_kArf7j87UPtINybSxYodZigGmZRkltROjVzw/exec';
-
-// Filtro de búsqueda en el select
-document.getElementById('buscarCentro').addEventListener('input', function() {
-    let filter = this.value.toLowerCase();
-    let options = document.getElementById('centro').options;
-    for (let i = 0; i < options.length; i++) {
-        let txt = options[i].text.toLowerCase();
-        options[i].style.display = txt.includes(filter) ? '' : 'none';
-    }
-});
-
-// Tabs
-document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        this.classList.add('active');
-        document.getElementById(this.dataset.tab).classList.add('active');
-    });
-});
-
-document.getElementById("incidenciaForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const file = formData.get("foto");
-
-    if (file && file.size > 0) {
-        const reader = new FileReader();
-        reader.onload = async function() {
-            const base64 = reader.result.split(",")[1];
-            const payload = {
-                centro: formData.get("centro"),
-                solicitadoPor: formData.get("solicitadoPor"),
-                descripcion: formData.get("descripcion"),
-                materiales: formData.get("materiales"),
-                foto: base64
-            };
-            await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-            alert("Incidencia creada correctamente");
-            location.reload();
-        };
-        reader.readAsDataURL(file);
-    } else {
-        const payload = {
-            centro: formData.get("centro"),
-            solicitadoPor: formData.get("solicitadoPor"),
-            descripcion: formData.get("descripcion"),
-            materiales: formData.get("materiales"),
-            foto: ""
-        };
-        await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-        alert("Incidencia creada correctamente");
-        location.reload();
-    }
-});
-
-async function cargarIncidencias() {
-    const res = await fetch(SHEET_CSV_URL);
-    const data = await res.text();
-    const rows = data.split("\n").map(r => r.split(","));
-    const abiertas = [], cerradas = [];
-
-    rows.slice(1).forEach(r => {
-        if (r[9] && r[9].trim().toLowerCase() === "sí") cerradas.push(r);
-        else abiertas.push(r);
-    });
-
-    const tbodyAbiertas = document.querySelector("#tablaAbiertas tbody");
-    abiertas.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6] ? `<a href="${r[6]}" target="_blank">Ver</a>` : ''}</td><td>${r[7]}</td>`;
-        tbodyAbiertas.appendChild(tr);
-    });
-
-    const tbodyCerradas = document.querySelector("#tablaCerradas tbody");
-    cerradas.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6] ? `<a href="${r[6]}" target="_blank">Ver</a>` : ''}</td><td>${r[7]}</td><td>${r[8]}</td>`;
-        tbodyCerradas.appendChild(tr);
-    });
-}
-
-cargarIncidencias();
-</script>
-
-</body>
-</html>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyof-QWtneajf72yU
