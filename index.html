@@ -8,7 +8,6 @@
   <style>
     body { background-color: #f8f9fa; padding-top: 20px; }
     .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .search-section { background-color: #e8f5e8; padding: 15px; border-radius: 8px; }
     .photo-preview { max-width: 100px; margin: 5px; }
   </style>
 
@@ -105,8 +104,8 @@
                 <input type="text" class="form-control" id="materiales"/>
               </div>
               <div class="mb-3">
-                <label>Foto (opcional)</label>
-                <input type="file" class="form-control" id="foto" accept="image/*"/>
+                <label>Foto (enlace)</label>
+                <input type="text" class="form-control" id="foto" placeholder="Pega el enlace de la foto aquí"/>
               </div>
               <button type="submit" class="btn btn-primary">Crear Incidencia</button>
             </form>
@@ -137,40 +136,29 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     let incidencias = [];
+    const DB_URL = 'https://raw.githubusercontent.com/talaier/incidencias-eroski-db/main/incidencias.json';
+    const DB_REPO = 'talaier/incidencias-eroski-db';
+    const FILE_PATH = 'incidencias.json';
 
-    // ✅ COPIA TUS URLS CORRECTAS AQUÍ
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?output=csv';
-    const APPS_SCRIPT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?output=csv';
-
-    async function cargarDeSheet() {
+    async function cargarIncidencias() {
       try {
-        const res = await fetch(SHEET_CSV_URL);
-        const csv = await res.text();
-        const lines = csv.trim().split('\n');
-        if (lines.length < 2) return [];
-        const headers = lines[0].split(',').map(h => h.trim());
-        return lines.slice(1).map(line => {
-          const values = line.split(',').map(v => v.trim());
-          const obj = {};
-          headers.forEach((h, i) => {
-            obj[h] = values[i] || '';
-          });
-          return obj;
-        });
+        const res = await fetch(DB_URL + '?t=' + Date.now());
+        incidencias = await res.json();
+        render();
       } catch (e) {
-        console.error('Error al cargar CSV', e);
-        return [];
+        console.error('Error al cargar', e);
+        alert('Error al cargar incidencias');
       }
     }
 
-    async function guardarEnSheet(inc) {
+    async function guardarIncidencias(data) {
       try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: JSON.stringify(inc)
-        });
-      } catch (e) {}
+        // Este paso se hace manualmente por ahora
+        alert('✅ Incidencia creada. Ahora abre el repositorio y actualiza incidencias.json con este JSON:\n\n' + JSON.stringify(data, null, 2));
+        window.open('https://github.com/talaier/incidencias-eroski-db/edit/main/incidencias.json', '_blank');
+      } catch (e) {
+        console.error('Error al guardar', e);
+      }
     }
 
     function generarRef() {
@@ -186,15 +174,6 @@
 
     document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const fotoInput = document.getElementById('foto');
-      let fotoData = null;
-      if (fotoInput.files[0]) {
-        fotoData = await new Promise(r => {
-          const a = new FileReader();
-          a.onload = e => r(e.target.result);
-          a.readAsDataURL(fotoInput.files[0]);
-        });
-      }
 
       const nueva = {
         id: Date.now().toString(),
@@ -203,22 +182,20 @@
         solicitadoPor: document.getElementById('solicitadoPor').value,
         descripcion: document.getElementById('descripcion').value,
         materiales: document.getElementById('materiales').value,
-        foto: fotoData,
+        foto: document.getElementById('foto').value.trim(),
         fechaApertura: new Date().toISOString(),
         fechaCierre: null,
-        cerrada: 'false'
+        cerrada: false
       };
 
-      incidencias.push(nueva);
-      await guardarEnSheet(nueva);
-      alert(`✅ Incidencia creada: ${nueva.referencia}`);
+      const data = [...incidencias, nueva];
+      await guardarIncidencias(data);
       document.getElementById('formIncidencia').reset();
-      render();
     });
 
     function render() {
-      renderLista('#listaAbiertas', i => i.cerrada === 'false');
-      renderLista('#listaCerradas', i => i.cerrada === 'true');
+      renderLista('#listaAbiertas', i => !i.cerrada);
+      renderLista('#listaCerradas', i => i.cerrada);
     }
 
     function renderLista(selector, filtro) {
@@ -226,7 +203,7 @@
       if (!el) return;
       el.innerHTML = '';
 
-      const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
+      const lista = incidencias.filter(filtro);
       if (lista.length === 0) {
         el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
         return;
@@ -249,7 +226,7 @@
               ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
               ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
               <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
-              ${i.cerrada === 'false' ? 
+              ${!i.cerrada ? 
                 `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>` : 
                 `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>`}
             </div>
@@ -267,35 +244,28 @@
       });
 
       document.querySelectorAll('.close-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
           if (confirm('¿Cerrar esta incidencia?')) {
             const id = e.target.dataset.id;
-            const inc = incidencias.find(i => i.id === id);
-            inc.cerrada = 'true';
-            inc.fechaCierre = new Date().toISOString();
-            guardarEnSheet(inc);
-            render();
+            const data = incidencias.map(i => i.id === id ? { ...i, cerrada: true, fechaCierre: new Date().toISOString() } : i);
+            await guardarIncidencias(data);
           }
         });
       });
 
       document.querySelectorAll('.reopen-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
           if (confirm('¿Reabrir esta incidencia?')) {
             const id = e.target.dataset.id;
-            const inc = incidencias.find(i => i.id === id);
-            inc.cerrada = 'false';
-            inc.fechaCierre = null;
-            guardarEnSheet(inc);
-            render();
+            const data = incidencias.map(i => i.id === id ? { ...i, cerrada: false, fechaCierre: null } : i);
+            await guardarIncidencias(data);
           }
         });
       });
     }
 
     window.addEventListener('load', async () => {
-      incidencias = await cargarDeSheet();
-      render();
+      await cargarIncidencias();
     });
   </script>
 </body>
