@@ -8,62 +8,20 @@
   <style>
     body { background-color: #f8f9fa; padding-top: 20px; }
     .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .search-section { background-color: #e8f5e8; padding: 15px; border-radius: 8px; }
-    .photo-preview { max-width: 100px; margin: 5px; }
+    .photo-preview { max-width: 100px; margin: 5px; cursor: pointer; }
   </style>
-
-  <!-- 🔐 LOGIN CON MEMORIA -->
-  <script>
-    const ACCESS_PASSWORD = '123';
-    const ACCESS_USER = 'lcc';
-
-    function isAuthenticated() {
-      return localStorage.getItem('auth') === 'true';
-    }
-
-    function setAuthenticated() {
-      localStorage.setItem('auth', 'true');
-    }
-
-    function requestAccess() {
-      if (isAuthenticated()) return true;
-
-      const maxAttempts = 3;
-      let attempts = 0;
-      while (attempts < maxAttempts) {
-        const user = prompt('🔐 Acceso restringido\nUsuario:', '');
-        if (user === null) {
-          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-          return false;
-        }
-        const pass = prompt('🔐 Contraseña:', '');
-        if (pass === null) {
-          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-          return false;
-        }
-        if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
-          setAuthenticated();
-          return true;
-        }
-        attempts++;
-        alert(`Contraseña incorrecta. Intento ${attempts}/${maxAttempts}`);
-      }
-      document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso bloqueado</h1>';
-      return false;
-    }
-    if (!requestAccess()) throw new Error('Acceso denegado');
-  </script>
 </head>
 <body>
   <div class="container">
     <h1 class="text-center mb-4">Gestión de Incidencias - <strong>SUPERMERCADOS EROSKI</strong></h1>
     <ul class="nav nav-tabs mb-4">
-      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nueva">Nueva Incidencia</a></li>
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nueva">Nueva</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#abiertas">Abiertas</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cerradas">Cerradas</a></li>
     </ul>
 
     <div class="tab-content">
+      <!-- Nueva incidencia -->
       <div class="tab-pane fade show active" id="nueva">
         <div class="card">
           <div class="card-body">
@@ -73,27 +31,66 @@
                 <select class="form-select" id="centro" required>
                   <option value="">Selecciona centro</option>
                   <option>Eroski Binissalem I (6705)</option>
+                  <option>Eroski Binissalem II (6096)</option>
                   <option>Eroski NOVA PARIS-CALVIA (7490)</option>
+                  <option>Eroski Secar (6495)</option>
                   <option>Eroski Son Moix (6801)</option>
+                  <option>Eroski Dragonera (6350)</option>
                   <option>Eroski La Puebla (6362)</option>
+                  <option>La Puebla 2 (6067)</option>
                   <option>Eroski Bendinat (6752)</option>
+                  <option>Eroski Indioteria (6514)</option>
+                  <option>Eroski Son Cladera (6538)</option>
+                  <option>Eroski Mercat de Llevant (6729)</option>
+                  <option>Eroski Portixol (6753)</option>
+                  <option>Eroski Can Pastilla (6806)</option>
+                  <option>Eroski Borne (6831)</option>
                   <option>Eroski Santa María I (6309)</option>
+                  <option>Eroski Santa María II (6694)</option>
                   <option>Eroski Escorxador (6363)</option>
+                  <option>Eroski Coll I (6376)</option>
+                  <option>Eroski Coll II (6718)</option>
                   <option>Eroski Palmanova (6537)</option>
+                  <option>Eroski Santanvi (6713)</option>
                   <option>Eroski Colonia (6499)</option>
+                  <option>Eroski Médico Jose Darder (6749)</option>
+                  <option>Eroski Consell (6643)</option>
+                  <option>Eroski Soller II (6692)</option>
                   <option>Eroski Capitán Salom (6892)</option>
+                  <option>Eroski Campos II (6653)</option>
                   <option>Eroski Llucmajor (6759)</option>
+                  <option>Eroski Pascual Ribot (6882)</option>
                   <option>Eroski Alaró (6719)</option>
+                  <option>Eroski Lloseta (6308)</option>
+                  <option>Eroski Capitán Salom II (7558)</option>
+                  <option>Eroski Son Rullan (6439)</option>
+                  <option>Eroski Son Ferriol (6714)</option>
+                  <option>Eroski Pascual Ribot II (7557)</option>
+                  <option>Eroski Fábrica (6983)</option>
+                  <option>Eroski Archiduque (6625)</option>
+                  <option>Eroski Navegación (7503)</option>
+                  <option>Eroski Inca (6398)</option>
+                  <option>Eroski Inca IV NORTE (6066)</option>
+                  <option>Eroski Andrea Doria (6574)</option>
+                  <option>Eroski Algaida (6726)</option>
+                  <option>Eroski Manacor I (6377)</option>
+                  <option>Eroski Industria (6328)</option>
+                  <option>Eroski MERCAT NOU (6755)</option>
+                  <option>Eroski Pérez Galdos (6756)</option>
+                  <option>Eroski Pere Garau (6793)</option>
+                  <option>Eroski Muro (6909)</option> 
                   <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
-                  <option>Eroski Muro (6909)</option>
+                  <option>Eroski Reyes Católicos (6360)</option>
                   <option>Eroski Sa Cabaneta (6852)</option>
                 </select>
               </div>
               <div class="mb-3">
                 <label>Solicitado por</label>
                 <select class="form-select" id="solicitadoPor" required>
-                  <option value="operario">Operario</option>
-                  <option value="responsable">Responsable del centro</option>
+                  <option value="Operario">Operario</option>
+                  <option value="Encargado Tienda">Encargado de tienda</option>
+                  <option value="Jefe de Zona">Jefe de zona</option>
+                  <option value="Directivo Dpto. Técnico">Directivo dpto. técnico</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -114,16 +111,17 @@
         </div>
       </div>
 
+      <!-- Listados -->
       <div class="tab-pane fade" id="abiertas">
         <div id="listaAbiertas" class="row"></div>
       </div>
-
       <div class="tab-pane fade" id="cerradas">
         <div id="listaCerradas" class="row"></div>
       </div>
     </div>
   </div>
 
+  <!-- Modal para foto -->
   <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -138,97 +136,102 @@
   <script>
     let incidencias = [];
 
-    // ✅ COPIA TUS URLS CORRECTAS AQUÍ
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?output=csv';
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2X5Ejkb4I6Fczw2BaXnIhJSIcxbDTympoQBoz0Lzf7LfLSBrqVNc1rTsvd_O9fKxQSg/exec';
+    // 🔗 URLs correctas
+    const SHEET_CSV_URL = "TU_URL_CSV";
+    const APPS_SCRIPT_URL = "TU_URL_SCRIPT";
 
+    // 📥 Cargar incidencias desde Sheet
     async function cargarDeSheet() {
       try {
         const res = await fetch(SHEET_CSV_URL);
         const csv = await res.text();
-        const lines = csv.trim().split('\n');
+        const lines = csv.trim().split("\n");
         if (lines.length < 2) return [];
-        const headers = lines[0].split(',').map(h => h.trim());
+        const headers = lines[0].split(",").map(h => h.trim());
         return lines.slice(1).map(line => {
-          const values = line.split(',').map(v => v.trim());
+          const values = line.split(",").map(v => v.trim());
           const obj = {};
           headers.forEach((h, i) => {
-            obj[h] = values[i] || '';
+            obj[h] = values[i] || "";
           });
           return obj;
         });
       } catch (e) {
-        console.error('Error al cargar CSV', e);
+        console.error("Error al cargar CSV", e);
         return [];
       }
     }
 
+    // 📤 Guardar en Sheet vía Apps Script
     async function guardarEnSheet(inc) {
-  try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(inc)
-    });
-    const data = await res.json();
-    console.log('Guardado en sheet:', data);
-  } catch (e) {
-    console.error('Error guardando en sheet:', e);
-  }
-}
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(inc)
+        });
+        const data = await res.json();
+        console.log("Guardado en sheet:", data);
+      } catch (e) {
+        console.error("Error guardando en sheet:", e);
+      }
+    }
 
+    // 🔢 Generar referencia única
     function generarRef() {
       const d = new Date();
       const date = d.getFullYear().toString().slice(-2) +
-                   String(d.getMonth() + 1).padStart(2, '0') +
-                   String(d.getDate()).padStart(2, '0');
+                   String(d.getMonth() + 1).padStart(2, "0") +
+                   String(d.getDate()).padStart(2, "0");
       const count = (Array.isArray(incidencias) ? incidencias : [])
-        .filter(i => i.referencia && typeof i.referencia === 'string' && i.referencia.startsWith(date))
+        .filter(i => i.referencia && typeof i.referencia === "string" && i.referencia.startsWith(date))
         .length + 1;
-      return `${date}-${String(count).padStart(2, '0')}`;
+      return `${date}-${String(count).padStart(2, "0")}`;
     }
 
-    document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
+    // 📝 Crear incidencia
+    document.getElementById("formIncidencia").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const fotoInput = document.getElementById('foto');
+      const fotoInput = document.getElementById("foto");
       let fotoData = null;
       if (fotoInput.files[0]) {
         fotoData = await new Promise(r => {
-          const a = new FileReader();
-          a.onload = e => r(e.target.result);
-          a.readAsDataURL(fotoInput.files[0]);
+          const reader = new FileReader();
+          reader.onload = e => r(e.target.result);
+          reader.readAsDataURL(fotoInput.files[0]);
         });
       }
 
       const nueva = {
         id: Date.now().toString(),
         referencia: generarRef(),
-        centro: document.getElementById('centro').value,
-        solicitadoPor: document.getElementById('solicitadoPor').value,
-        descripcion: document.getElementById('descripcion').value,
-        materiales: document.getElementById('materiales').value,
+        centro: document.getElementById("centro").value,
+        solicitadoPor: document.getElementById("solicitadoPor").value,
+        descripcion: document.getElementById("descripcion").value,
+        materiales: document.getElementById("materiales").value,
         foto: fotoData,
         fechaApertura: new Date().toISOString(),
         fechaCierre: null,
-        cerrada: 'false'
+        cerrada: "false"
       };
 
       incidencias.push(nueva);
       await guardarEnSheet(nueva);
       alert(`✅ Incidencia creada: ${nueva.referencia}`);
-      document.getElementById('formIncidencia').reset();
+      document.getElementById("formIncidencia").reset();
       render();
     });
 
+    // 📋 Renderizar incidencias
     function render() {
-      renderLista('#listaAbiertas', i => i.cerrada === 'false');
-      renderLista('#listaCerradas', i => i.cerrada === 'true');
+      renderLista("#listaAbiertas", i => i.cerrada === "false");
+      renderLista("#listaCerradas", i => i.cerrada === "true");
     }
 
     function renderLista(selector, filtro) {
       const el = document.querySelector(selector);
       if (!el) return;
-      el.innerHTML = '';
+      el.innerHTML = "";
 
       const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
       if (lista.length === 0) {
@@ -238,22 +241,23 @@
 
       lista.forEach(i => {
         const fechaApertura = new Date(i.fechaApertura).toLocaleDateString();
-        const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString() : '—';
+        const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString() : "—";
 
-        const div = document.createElement('div');
-        div.className = 'col-md-6 mb-3';
+        const div = document.createElement("div");
+        div.className = "col-md-6 mb-3";
         div.innerHTML = `
           <div class="card">
             <div class="card-body">
               <h6 class="text-muted">${i.referencia}</h6>
               <h5>${i.centro}</h5>
               <p class="small">${i.descripcion}</p>
+              <p><strong>Solicitado por:</strong> ${i.solicitadoPor}</p>
               <p><strong>Apertura:</strong> ${fechaApertura}</p>
               <p><strong>Cierre:</strong> ${fechaCierre}</p>
-              ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
-              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
-              <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
-              ${i.cerrada === 'false' ? 
+              ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ""}
+              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ""}
+              <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? "" : "disabled"}>Ver Foto</button>
+              ${i.cerrada === "false" ? 
                 `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>` : 
                 `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>`}
             </div>
@@ -262,20 +266,22 @@
         el.appendChild(div);
       });
 
-      document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
-        btn.addEventListener('click', e => {
-          const img = e.target.parentElement.querySelector('.photo-preview');
-          document.getElementById('modalImage').src = img.dataset.img;
-          new bootstrap.Modal(document.getElementById('photoModal')).show();
+      // Eventos foto
+      document.querySelectorAll(".ver-foto-btn:not([disabled])").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const img = e.target.parentElement.querySelector(".photo-preview");
+          document.getElementById("modalImage").src = img.dataset.img;
+          new bootstrap.Modal(document.getElementById("photoModal")).show();
         });
       });
 
-      document.querySelectorAll('.close-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          if (confirm('¿Cerrar esta incidencia?')) {
+      // Eventos cerrar/reabrir
+      document.querySelectorAll(".close-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          if (confirm("¿Cerrar esta incidencia?")) {
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
-            inc.cerrada = 'true';
+            inc.cerrada = "true";
             inc.fechaCierre = new Date().toISOString();
             guardarEnSheet(inc);
             render();
@@ -283,12 +289,12 @@
         });
       });
 
-      document.querySelectorAll('.reopen-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          if (confirm('¿Reabrir esta incidencia?')) {
+      document.querySelectorAll(".reopen-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          if (confirm("¿Reabrir esta incidencia?")) {
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
-            inc.cerrada = 'false';
+            inc.cerrada = "false";
             inc.fechaCierre = null;
             guardarEnSheet(inc);
             render();
@@ -297,12 +303,11 @@
       });
     }
 
-    window.addEventListener('load', async () => {
-  incidencias = await cargarDeAPI();
-render();
-  // Opcional: auto-sync cada 10s si hay varios usuarios
-  // setInterval(async () => { incidencias = await cargarDeAPI(); render(); }, 10000);
-});
+    // 🚀 Inicializar
+    window.addEventListener("load", async () => {
+      incidencias = await cargarDeSheet();
+      render();
+    });
   </script>
 </body>
 </html>
