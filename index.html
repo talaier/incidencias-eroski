@@ -27,7 +27,7 @@
           <div class="card-body">
             <form id="formIncidencia">
               <div class="mb-3">
-                <label>Centro EROSKI</label>
+                <label>Centro</label>
                 <select class="form-select" id="centro" required>
                   <option value="">Selecciona centro</option>
                   <option>Eroski Binissalem I (6705)</option>
@@ -78,7 +78,7 @@
                   <option>Eroski MERCAT NOU (6755)</option>
                   <option>Eroski Pérez Galdos (6756)</option>
                   <option>Eroski Pere Garau (6793)</option>
-                  <option>Eroski Muro (6909)</option> 
+                  <option>Eroski Muro (6909)</option>
                   <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
                   <option>Eroski Reyes Católicos (6360)</option>
                   <option>Eroski Sa Cabaneta (6852)</option>
@@ -88,9 +88,9 @@
                 <label>Solicitado por</label>
                 <select class="form-select" id="solicitadoPor" required>
                   <option value="Operario">Operario</option>
-                  <option value="Encargado Tienda">Encargado de tienda</option>
-                  <option value="Jefe de Zona">Jefe de zona</option>
-                  <option value="Directivo Dpto. Técnico">Directivo dpto. técnico</option>
+                  <option value="Encargado tienda">Encargado tienda</option>
+                  <option value="Jefe de zona">Jefe de zona</option>
+                  <option value="Directivo dpto. técnico">Directivo dpto. técnico</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -111,17 +111,19 @@
         </div>
       </div>
 
-      <!-- Listados -->
+      <!-- Abiertas -->
       <div class="tab-pane fade" id="abiertas">
         <div id="listaAbiertas" class="row"></div>
       </div>
+
+      <!-- Cerradas -->
       <div class="tab-pane fade" id="cerradas">
         <div id="listaCerradas" class="row"></div>
       </div>
     </div>
   </div>
 
-  <!-- Modal para foto -->
+  <!-- Modal foto -->
   <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -135,64 +137,44 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     let incidencias = [];
+    const APPS_SCRIPT_URL = "TU_URL_SCRIPT"; // ⚠️ pega aquí tu URL del Apps Script
 
-    // 🔗 URLs correctas
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?output=csv";
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJTuyB-CTYIQOzm19BkeUfdn7y3TF-5xXX4AnfCCq5xyJgksda42em0nOCgnDBCjd8oQ/exec";
-
-    // 📥 Cargar incidencias desde Sheet
     async function cargarDeSheet() {
       try {
-        const res = await fetch(SHEET_CSV_URL);
-        const csv = await res.text();
-        const lines = csv.trim().split("\n");
-        if (lines.length < 2) return [];
-        const headers = lines[0].split(",").map(h => h.trim());
-        return lines.slice(1).map(line => {
-          const values = line.split(",").map(v => v.trim());
-          const obj = {};
-          headers.forEach((h, i) => {
-            obj[h] = values[i] || "";
-          });
-          return obj;
-        });
+        const res = await fetch(APPS_SCRIPT_URL);
+        return await res.json();
       } catch (e) {
-        console.error("Error al cargar CSV", e);
+        console.error("Error cargando incidencias:", e);
         return [];
       }
     }
 
-    // 📤 Guardar en Sheet vía Apps Script
-    function guardarEnSheet(inc) {
-  const params = new URLSearchParams(inc).toString();
-  const url = `${APPS_SCRIPT_URL}?${params}&callback=handleResponse`;
-  const script = document.createElement("script");
-  script.src = url;
-  document.body.appendChild(script);
-}
+    async function guardarEnSheet(inc) {
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(inc)
+        });
+        return await res.json();
+      } catch (e) {
+        console.error("Error guardando incidencia:", e);
+      }
+    }
 
-function handleResponse(data) {
-  console.log("Respuesta:", data);
-}
-    
-
-    // 🔢 Generar referencia única
     function generarRef() {
       const d = new Date();
       const date = d.getFullYear().toString().slice(-2) +
-                   String(d.getMonth() + 1).padStart(2, "0") +
-                   String(d.getDate()).padStart(2, "0");
-      const count = (Array.isArray(incidencias) ? incidencias : [])
-        .filter(i => i.referencia && typeof i.referencia === "string" && i.referencia.startsWith(date))
-        .length + 1;
-      return `${date}-${String(count).padStart(2, "0")}`;
+                   String(d.getMonth()+1).padStart(2,"0") +
+                   String(d.getDate()).padStart(2,"0");
+      const count = incidencias.filter(i => i.referencia?.startsWith(date)).length + 1;
+      return `${date}-${String(count).padStart(2,"0")}`;
     }
 
-    // 📝 Crear incidencia
-    document.getElementById("formIncidencia").addEventListener("submit", async (e) => {
+    document.getElementById("formIncidencia").addEventListener("submit", async e => {
       e.preventDefault();
       const fotoInput = document.getElementById("foto");
-      let fotoData = null;
+      let fotoData = "";
       if (fotoInput.files[0]) {
         fotoData = await new Promise(r => {
           const reader = new FileReader();
@@ -210,18 +192,17 @@ function handleResponse(data) {
         materiales: document.getElementById("materiales").value,
         foto: fotoData,
         fechaApertura: new Date().toISOString(),
-        fechaCierre: null,
+        fechaCierre: "",
         cerrada: "false"
       };
 
-      incidencias.push(nueva);
       await guardarEnSheet(nueva);
-      alert(`✅ Incidencia creada: ${nueva.referencia}`);
-      document.getElementById("formIncidencia").reset();
+      incidencias = await cargarDeSheet();
       render();
+      e.target.reset();
+      alert("✅ Incidencia creada");
     });
 
-    // 📋 Renderizar incidencias
     function render() {
       renderLista("#listaAbiertas", i => i.cerrada === "false");
       renderLista("#listaCerradas", i => i.cerrada === "true");
@@ -229,80 +210,57 @@ function handleResponse(data) {
 
     function renderLista(selector, filtro) {
       const el = document.querySelector(selector);
-      if (!el) return;
       el.innerHTML = "";
-
-      const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
-      if (lista.length === 0) {
-        el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
+      const lista = incidencias.filter(filtro);
+      if (!lista.length) {
+        el.innerHTML = "<p class='text-muted'>No hay incidencias</p>";
         return;
       }
-
       lista.forEach(i => {
-        const fechaApertura = new Date(i.fechaApertura).toLocaleDateString();
-        const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString() : "—";
-
-        const div = document.createElement("div");
-        div.className = "col-md-6 mb-3";
-        div.innerHTML = `
+        const card = document.createElement("div");
+        card.className = "col-md-6 mb-3";
+        card.innerHTML = `
           <div class="card">
             <div class="card-body">
               <h6 class="text-muted">${i.referencia}</h6>
               <h5>${i.centro}</h5>
-              <p class="small">${i.descripcion}</p>
-              <p><strong>Solicitado por:</strong> ${i.solicitadoPor}</p>
-              <p><strong>Apertura:</strong> ${fechaApertura}</p>
-              <p><strong>Cierre:</strong> ${fechaCierre}</p>
-              ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ""}
-              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ""}
-              <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? "" : "disabled"}>Ver Foto</button>
-              ${i.cerrada === "false" ? 
-                `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>` : 
-                `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>`}
+              <p>${i.descripcion}</p>
+              ${i.materiales ? `<p><b>Materiales:</b> ${i.materiales}</p>` : ""}
+              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview">` : ""}
+              ${i.cerrada === "false"
+                ? `<button class="btn btn-sm btn-danger" onclick="cerrarInc('${i.id}')">Cerrar</button>`
+                : `<button class="btn btn-sm btn-success" onclick="reabrirInc('${i.id}')">Reabrir</button>`}
             </div>
-          </div>
-        `;
-        el.appendChild(div);
+          </div>`;
+        el.appendChild(card);
       });
 
-      // Eventos foto
-      document.querySelectorAll(".ver-foto-btn:not([disabled])").forEach(btn => {
-        btn.addEventListener("click", e => {
-          const img = e.target.parentElement.querySelector(".photo-preview");
-          document.getElementById("modalImage").src = img.dataset.img;
+      document.querySelectorAll(".photo-preview").forEach(img => {
+        img.addEventListener("click", e => {
+          document.getElementById("modalImage").src = e.target.src;
           new bootstrap.Modal(document.getElementById("photoModal")).show();
-        });
-      });
-
-      // Eventos cerrar/reabrir
-      document.querySelectorAll(".close-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-          if (confirm("¿Cerrar esta incidencia?")) {
-            const id = e.target.dataset.id;
-            const inc = incidencias.find(i => i.id === id);
-            inc.cerrada = "true";
-            inc.fechaCierre = new Date().toISOString();
-            guardarEnSheet(inc);
-            render();
-          }
-        });
-      });
-
-      document.querySelectorAll(".reopen-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-          if (confirm("¿Reabrir esta incidencia?")) {
-            const id = e.target.dataset.id;
-            const inc = incidencias.find(i => i.id === id);
-            inc.cerrada = "false";
-            inc.fechaCierre = null;
-            guardarEnSheet(inc);
-            render();
-          }
         });
       });
     }
 
-    // 🚀 Inicializar
+    async function cerrarInc(id) {
+      const inc = incidencias.find(i => i.id === id);
+      inc.cerrada = "true";
+      inc.fechaCierre = new Date().toISOString();
+      await guardarEnSheet(inc);
+      incidencias = await cargarDeSheet();
+      render();
+    }
+
+    async function reabrirInc(id) {
+      const inc = incidencias.find(i => i.id === id);
+      inc.cerrada = "false";
+      inc.fechaCierre = "";
+      await guardarEnSheet(inc);
+      incidencias = await cargarDeSheet();
+      render();
+    }
+
     window.addEventListener("load", async () => {
       incidencias = await cargarDeSheet();
       render();
@@ -310,3 +268,5 @@ function handleResponse(data) {
   </script>
 </body>
 </html>
+
+
