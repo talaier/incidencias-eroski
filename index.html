@@ -164,14 +164,16 @@
     }
 
     async function guardarEnSheet(inc) {
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: JSON.stringify(inc)
-        });
-      } catch (e) {}
-    }
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // simple request
+      body: JSON.stringify(inc)
+    });
+  } catch (e) {
+    console.error('Error al guardar', e);
+  }
+}
 
     function generarRef() {
       const d = new Date();
@@ -294,8 +296,11 @@
     }
 
     window.addEventListener('load', async () => {
-      incidencias = await cargarDeSheet();
-      render();
+  incidencias = await cargarDeAPI();
+render();
+  // Opcional: auto-sync cada 10s si hay varios usuarios
+  // setInterval(async () => { incidencias = await cargarDeAPI(); render(); }, 10000);
+});
     });
   </script>
 </body>
