@@ -140,7 +140,7 @@
 
     // ✅ COPIA TUS URLS CORRECTAS AQUÍ
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?output=csv';
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjIdrHyhfkqiSiuxbe2VeMBSPE87nLWaIoVg1rV4R_omQzx6xG_44jzi28OqlfDJ0oaQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2X5Ejkb4I6Fczw2BaXnIhJSIcxbDTympoQBoz0Lzf7LfLSBrqVNc1rTsvd_O9fKxQSg/exec';
 
     async function cargarDeSheet() {
       try {
@@ -165,13 +165,15 @@
 
     async function guardarEnSheet(inc) {
   try {
-    await fetch(APPS_SCRIPT_URL, {
+    const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // simple request
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(inc)
     });
+    const data = await res.json();
+    console.log('Guardado en sheet:', data);
   } catch (e) {
-    console.error('Error al guardar', e);
+    console.error('Error guardando en sheet:', e);
   }
 }
 
