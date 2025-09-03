@@ -138,7 +138,7 @@
 
     // 🔗 URLs correctas
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPnuyc6xEROYNoCAmSB_aICRJOE4k2ZCOli8awlPn-Agn-fuACB68kKwGpZTjPMo19jW-SmJPIRfzP/pub?output=csv";
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyL8_GplpDHvYIe0ZH5sMyquygVdvxo2-YYPEWgqaCJhRCK982_ClB0Y75IuKQMm13Mdw/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJTuyB-CTYIQOzm19BkeUfdn7y3TF-5xXX4AnfCCq5xyJgksda42em0nOCgnDBCjd8oQ/exec";
 
     // 📥 Cargar incidencias desde Sheet
     async function cargarDeSheet() {
@@ -163,19 +163,18 @@
     }
 
     // 📤 Guardar en Sheet vía Apps Script
-    async function guardarEnSheet(inc) {
-      try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(inc)
-        });
-        const data = await res.json();
-        console.log("Guardado en sheet:", data);
-      } catch (e) {
-        console.error("Error guardando en sheet:", e);
-      }
-    }
+    function guardarEnSheet(inc) {
+  const params = new URLSearchParams(inc).toString();
+  const url = `${APPS_SCRIPT_URL}?${params}&callback=handleResponse`;
+  const script = document.createElement("script");
+  script.src = url;
+  document.body.appendChild(script);
+}
+
+function handleResponse(data) {
+  console.log("Respuesta:", data);
+}
+    
 
     // 🔢 Generar referencia única
     function generarRef() {
