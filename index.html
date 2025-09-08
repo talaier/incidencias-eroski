@@ -5,12 +5,12 @@
   <title>Test API GAS</title>
 </head>
 <body>
-  <h1>Test Google Apps Script - POST sin CORS</h1>
+  <h1>Test Google Apps Script - POST Corregido</h1>
   <button onclick="probarGET()">Probar GET</button>
   <button onclick="probarPOST()">Probar POST</button>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw4H2X5V7foBGwhJQTe4kVRp2sSHuascPS2C6JG1CUuai8l1QcXGLL-fbj9NLd0Mv3D/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyeuIISPCSk6y4Fu9duM31eJZ-4twFlVAZVPa-AaJL3W4QJYTmMLjLeu0PHTz33XUCU/exec"; // ← Pega tu URL aquí
 
     async function probarGET() {
       try {
@@ -28,7 +28,7 @@
       try {
         const res = await fetch(API_URL, {
           method: "POST",
-          mode: "no-cors",  // ⚠️ Obligatorio para evitar CORS
+          mode: "cors", // ← Ahora puedes usar 'cors' si el script responde bien
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             referencia: "TEST-123",
@@ -42,12 +42,18 @@
             cerrada: false
           })
         });
-        // ⚠️ Con 'no-cors', no puedes leer 'res', pero se envía
-        console.log("POST enviado (modo no-cors). No puedes ver la respuesta.");
-        alert("✅ Incidencia enviada (modo no-cors). Revisa tu hoja de cálculo.");
+
+        const data = await res.json();
+        console.log("POST OK:", data);
+        
+        if (data.success) {
+          alert("✅ Incidencia guardada. Refresca tu hoja de cálculo.");
+        } else {
+          alert("❌ Error: " + data.error);
+        }
       } catch (err) {
-        // En 'no-cors', el catch puede no dispararse
         console.error("Error POST:", err);
+        alert("❌ Error de conexión. Revisa la consola.");
       }
     }
   </script>
