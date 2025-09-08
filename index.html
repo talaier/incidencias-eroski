@@ -19,35 +19,29 @@
     function isAuthenticated() {
       return localStorage.getItem('auth') === 'true';
     }
-
     function setAuthenticated() {
       localStorage.setItem('auth', 'true');
     }
-
     function requestAccess() {
       if (isAuthenticated()) return true;
-
       const maxAttempts = 3;
       let attempts = 0;
       while (attempts < maxAttempts) {
-        const user = prompt('🔐 Acceso restringido\nUsuario:', '');
-        if (user === null) {
-          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-          return false;
-        }
+        const user = prompt('🔐 Usuario:', '');
+        if (user === null) return accesoDenegado();
         const pass = prompt('🔐 Contraseña:', '');
-        if (pass === null) {
-          document.body.innerHTML = '<h1 class="text-center mt-5">Acceso denegado</h1>';
-          return false;
-        }
+        if (pass === null) return accesoDenegado();
         if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
           setAuthenticated();
           return true;
         }
         attempts++;
-        alert(`Contraseña incorrecta. Intento ${attempts}/${maxAttempts}`);
+        alert(`❌ Credenciales incorrectas (${attempts}/${maxAttempts})`);
       }
-      document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso bloqueado</h1>';
+      return accesoDenegado();
+    }
+    function accesoDenegado() {
+      document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso denegado</h1>';
       return false;
     }
     if (!requestAccess()) throw new Error('Acceso denegado');
@@ -63,6 +57,7 @@
     </ul>
 
     <div class="tab-content">
+      <!-- Nueva incidencia -->
       <div class="tab-pane fade show active" id="nueva">
         <div class="card">
           <div class="card-body">
@@ -91,8 +86,10 @@
               <div class="mb-3">
                 <label>Solicitado por</label>
                 <select class="form-select" id="solicitadoPor" required>
-                  <option value="operario">Operario</option>
-                  <option value="responsable">Responsable del centro</option>
+                  <option value="Operario">Operario</option>
+                  <option value="Encargado tienda">Encargado tienda</option>
+                  <option value="Jefe de zona">Jefe de zona</option>
+                  <option value="Directivo dpto. técnico">Directivo dpto. técnico</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -104,8 +101,8 @@
                 <input type="text" class="form-control" id="materiales"/>
               </div>
               <div class="mb-3">
-                <label>Foto (enlace)</label>
-                <input type="text" class="form-control" id="foto" placeholder="Pega el enlace de la foto aquí"/>
+                <label>Foto (opcional)</label>
+                <input type="file" class="form-control" id="foto" accept="image/*"/>
               </div>
               <button type="submit" class="btn btn-primary">Crear Incidencia</button>
             </form>
@@ -113,16 +110,19 @@
         </div>
       </div>
 
+      <!-- Abiertas -->
       <div class="tab-pane fade" id="abiertas">
         <div id="listaAbiertas" class="row"></div>
       </div>
 
+      <!-- Cerradas -->
       <div class="tab-pane fade" id="cerradas">
         <div id="listaCerradas" class="row"></div>
       </div>
     </div>
   </div>
 
+  <!-- Modal de foto -->
   <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -137,60 +137,68 @@
   <script>
     let incidencias = [];
 
-    // ✅ URL de tu base de datos en GitHub
-    const DB_URL = 'https://raw.githubusercontent.com/talaier/incidencias-eroski-db/main/incidencias.json';
+    // ✅ COPIA TU URL DE APPS SCRIPT (la que termina en /exec)
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxIWeNTN04P_jm7jkjpJ30tlXAbBGYYlhaJ6OUosPbzn4ddmCe5nKjwt-JtalmCV4Jd/exec';
 
-    async function cargarIncidencias() {
+    async function cargarDeSheet() {
       try {
-        const res = await fetch(DB_URL + '?t=' + Date.now());
-        incidencias = await res.json();
-        render();
+        const res = await fetch(APPS_SCRIPT_URL);
+        return await res.json();
       } catch (e) {
-        console.error('Error al cargar', e);
-        alert('Error al cargar incidencias');
+        console.error('Error al cargar incidencias', e);
+        return [];
       }
     }
 
-    async function guardarIncidencias(data) {
-      alert('✅ Incidencia creada. Ahora abre este enlace y actualiza el archivo JSON:\n\n' + JSON.stringify(data, null, 2));
-      window.open('https://github.com/talaier/incidencias-eroski-db/edit/main/incidencias.json', '_blank');
-    }
-
-    function generarRef() {
-      const d = new Date();
-      const date = d.getFullYear().toString().slice(-2) +
-                   String(d.getMonth() + 1).padStart(2, '0') +
-                   String(d.getDate()).padStart(2, '0');
-      const count = (Array.isArray(incidencias) ? incidencias : [])
-        .filter(i => i.referencia && typeof i.referencia === 'string' && i.referencia.startsWith(date))
-        .length + 1;
-      return `${date}-${String(count).padStart(2, '0')}`;
+    async function guardarEnSheet(inc) {
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inc)
+        });
+        return await res.json();
+      } catch (e) {
+        console.error('Error guardando en sheet:', e);
+      }
     }
 
     document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const fotoInput = document.getElementById('foto');
+      let fotoData = null;
+      if (fotoInput.files[0]) {
+        fotoData = await new Promise(r => {
+          const a = new FileReader();
+          a.onload = e => r(e.target.result);
+          a.readAsDataURL(fotoInput.files[0]);
+        });
+      }
 
       const nueva = {
-        id: Date.now().toString(),
-        referencia: generarRef(),
         centro: document.getElementById('centro').value,
         solicitadoPor: document.getElementById('solicitadoPor').value,
         descripcion: document.getElementById('descripcion').value,
         materiales: document.getElementById('materiales').value,
-        foto: document.getElementById('foto').value.trim(),
+        foto: fotoData,
         fechaApertura: new Date().toISOString(),
-        fechaCierre: null,
-        cerrada: false
+        cerrada: "No"
       };
 
-      const data = [...incidencias, nueva];
-      await guardarIncidencias(data);
-      document.getElementById('formIncidencia').reset();
+      const res = await guardarEnSheet(nueva);
+      if (res && res.ok) {
+        alert(`✅ Incidencia creada: ${res.referencia}`);
+        document.getElementById('formIncidencia').reset();
+        incidencias = await cargarDeSheet();
+        render();
+      } else {
+        alert('❌ Error al guardar la incidencia');
+      }
     });
 
     function render() {
-      renderLista('#listaAbiertas', i => !i.cerrada);
-      renderLista('#listaCerradas', i => i.cerrada);
+      renderLista('#listaAbiertas', i => i.Cerrada === 'No');
+      renderLista('#listaCerradas', i => i.Cerrada === 'Sí');
     }
 
     function renderLista(selector, filtro) {
@@ -198,69 +206,43 @@
       if (!el) return;
       el.innerHTML = '';
 
-      const lista = incidencias.filter(filtro);
+      const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
       if (lista.length === 0) {
         el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
         return;
       }
 
       lista.forEach(i => {
-        const fechaApertura = new Date(i.fechaApertura).toLocaleDateString();
-        const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString() : '—';
-
         const div = document.createElement('div');
         div.className = 'col-md-6 mb-3';
         div.innerHTML = `
           <div class="card">
             <div class="card-body">
-              <h6 class="text-muted">${i.referencia}</h6>
-              <h5>${i.centro}</h5>
-              <p class="small">${i.descripcion}</p>
-              <p><strong>Apertura:</strong> ${fechaApertura}</p>
-              <p><strong>Cierre:</strong> ${fechaCierre}</p>
-              ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
-              ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-img="${i.foto}">` : ''}
-              <button class="btn btn-sm btn-info ver-foto-btn" ${i.foto ? '' : 'disabled'}>Ver Foto</button>
-              ${!i.cerrada ? 
-                `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>` : 
-                `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>`}
+              <h6 class="text-muted">${i.Referencia}</h6>
+              <h5>${i.Centro}</h5>
+              <p class="small">${i.Descripcion}</p>
+              <p><strong>Solicitado por:</strong> ${i.SolicitadoPor}</p>
+              <p><strong>Apertura:</strong> ${i['Fecha Apertura']}</p>
+              <p><strong>Cierre:</strong> ${i['Fecha Cierre'] || '—'}</p>
+              ${i.Materiales ? `<p><strong>Materiales:</strong> ${i.Materiales}</p>` : ''}
+              ${i.Foto ? `<img src="${i.Foto}" class="img-thumbnail photo-preview" data-img="${i.Foto}">` : ''}
             </div>
           </div>
         `;
         el.appendChild(div);
       });
 
-      document.querySelectorAll('.ver-foto-btn:not([disabled])').forEach(btn => {
-        btn.addEventListener('click', e => {
-          const img = e.target.parentElement.querySelector('.photo-preview');
-          document.getElementById('modalImage').src = img.dataset.img;
+      document.querySelectorAll('.photo-preview').forEach(img => {
+        img.addEventListener('click', e => {
+          document.getElementById('modalImage').src = e.target.dataset.img;
           new bootstrap.Modal(document.getElementById('photoModal')).show();
-        });
-      });
-
-      document.querySelectorAll('.close-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          if (confirm('¿Cerrar esta incidencia?')) {
-            const id = e.target.dataset.id;
-            const data = incidencias.map(i => i.id === id ? { ...i, cerrada: true, fechaCierre: new Date().toISOString() } : i);
-            await guardarIncidencias(data);
-          }
-        });
-      });
-
-      document.querySelectorAll('.reopen-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          if (confirm('¿Reabrir esta incidencia?')) {
-            const id = e.target.dataset.id;
-            const data = incidencias.map(i => i.id === id ? { ...i, cerrada: false, fechaCierre: null } : i);
-            await guardarIncidencias(data);
-          }
         });
       });
     }
 
     window.addEventListener('load', async () => {
-      await cargarIncidencias();
+      incidencias = await cargarDeSheet();
+      render();
     });
   </script>
 </body>
