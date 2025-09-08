@@ -137,8 +137,8 @@
   <script>
     let incidencias = [];
 
-    // ✅ COPIA TU URL DE APPS SCRIPT (la que termina en /exec)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxIWeNTN04P_jm7jkjpJ30tlXAbBGYYlhaJ6OUosPbzn4ddmCe5nKjwt-JtalmCV4Jd/exec';
+    // ✅ PEGA TU URL DE APPS SCRIPT (la que termina en /exec)
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybB-0-eFEVgUyXc17btH6U1kclq3WmQeqQebSkfw5Bp3jvntWG9UnEa6C1UZvWqXTu/exec';
 
     async function cargarDeSheet() {
       try {
@@ -192,7 +192,7 @@
         incidencias = await cargarDeSheet();
         render();
       } else {
-        alert('❌ Error al guardar la incidencia');
+        alert('❌ Error al guardar la incidencia: ' + (res?.error || 'Sin conexión'));
       }
     });
 
@@ -213,6 +213,9 @@
       }
 
       lista.forEach(i => {
+        const fechaApertura = new Date(i['Fecha Apertura']).toLocaleDateString();
+        const fechaCierre = i['Fecha Cierre'] ? new Date(i['Fecha Cierre']).toLocaleDateString() : '—';
+
         const div = document.createElement('div');
         div.className = 'col-md-6 mb-3';
         div.innerHTML = `
@@ -222,8 +225,8 @@
               <h5>${i.Centro}</h5>
               <p class="small">${i.Descripcion}</p>
               <p><strong>Solicitado por:</strong> ${i.SolicitadoPor}</p>
-              <p><strong>Apertura:</strong> ${i['Fecha Apertura']}</p>
-              <p><strong>Cierre:</strong> ${i['Fecha Cierre'] || '—'}</p>
+              <p><strong>Apertura:</strong> ${fechaApertura}</p>
+              <p><strong>Cierre:</strong> ${fechaCierre}</p>
               ${i.Materiales ? `<p><strong>Materiales:</strong> ${i.Materiales}</p>` : ''}
               ${i.Foto ? `<img src="${i.Foto}" class="img-thumbnail photo-preview" data-img="${i.Foto}">` : ''}
             </div>
