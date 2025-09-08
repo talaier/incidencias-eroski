@@ -1,239 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Incidencias Eroski</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f6f8;
-    }
-    header {
-      background: #004481;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    h2 {
-      margin-top: 1rem;
-      color: #004481;
-    }
-    form {
-      display: grid;
-      gap: 1rem;
-    }
-    label {
-      font-weight: bold;
-    }
-    input, select, textarea, button {
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 100%;
-    }
-    button {
-      background: #0072ce;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-    .tabs {
-      display: flex;
-      margin-top: 2rem;
-      border-bottom: 2px solid #ddd;
-    }
-    .tab {
-      flex: 1;
-      padding: 1rem;
-      text-align: center;
-      cursor: pointer;
-      font-weight: bold;
-      border-bottom: 3px solid transparent;
-    }
-    .tab.active {
-      border-color: #0072ce;
-      color: #0072ce;
-    }
-    .tab-content {
-      display: none;
-      margin-top: 1rem;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      text-align: left;
-    }
-    th {
-      background: #f0f0f0;
-    }
-  </style>
+  <title>Test API GAS</title>
 </head>
 <body>
-  <header>
-    <h1>Gestión de Incidencias - Eroski</h1>
-  </header>
-
-  <main>
-    <h2>Nueva Incidencia</h2>
-    <form id="incidenciaForm">
-      <label>Centro:</label>
-      <select name="centro" required>
-        <option value="">-- Selecciona un centro --</option>
-        <option>Eroski Binissalem I (6705)</option>
-        <option>Eroski Binissalem II (6096)</option>
-        <option>Eroski NOVA PARIS-CALVIA (7490)</option>
-        <option>Eroski Secar (6495)</option>
-        <option>Eroski Son Moix (6801)</option>
-        <option>Eroski Dragonera (6350)</option>
-        <!-- ⚠️ aquí irían el resto de centros -->
-      </select>
-
-      <label>Descripción:</label>
-      <textarea name="descripcion" required></textarea>
-
-      <label>Solicitado por:</label>
-      <select name="solicitado" required>
-        <option value="Operario">Operario</option>
-        <option value="Encargado tienda">Encargado tienda</option>
-        <option value="Jefe de zona">Jefe de zona</option>
-        <option value="Directivo dpto. técnico">Directivo dpto. técnico</option>
-      </select>
-
-      <label>Estado:</label>
-      <select name="estado" required>
-        <option value="Abierta">Abierta</option>
-        <option value="Cerrada">Cerrada</option>
-      </select>
-
-      <button type="submit">Crear incidencia</button>
-    </form>
-
-    <div class="tabs">
-      <div class="tab active" data-tab="abiertas">Abiertas</div>
-      <div class="tab" data-tab="cerradas">Cerradas</div>
-    </div>
-
-    <div id="abiertas" class="tab-content active">
-      <h2>Incidencias Abiertas</h2>
-      <table id="tablaAbiertas">
-        <thead>
-          <tr>
-            <th>Referencia</th>
-            <th>Centro</th>
-            <th>Descripción</th>
-            <th>Solicitado</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div id="cerradas" class="tab-content">
-      <h2>Incidencias Cerradas</h2>
-      <table id="tablaCerradas">
-        <thead>
-          <tr>
-            <th>Referencia</th>
-            <th>Centro</th>
-            <th>Descripción</th>
-            <th>Solicitado</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </main>
+  <h1>Test Google Apps Script</h1>
+  <button onclick="probarGET()">Probar GET</button>
+  <button onclick="probarPOST()">Probar POST</button>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZDk_jtceNeKy0eu9hD5ZopsC-vXTAGQox22BA9bXNKnEhqkTzB3vfKPSk4BzUhwsV/exec";
+    const API_URL = "TU_URL_EXEC_AQUI";
 
-    async function cargarDeSheet() {
+    async function probarGET() {
       try {
-        const res = await fetch(APPS_SCRIPT_URL);
+        const res = await fetch(API_URL);
         const data = await res.json();
-
-        const abiertasBody = document.querySelector("#tablaAbiertas tbody");
-        const cerradasBody = document.querySelector("#tablaCerradas tbody");
-        abiertasBody.innerHTML = "";
-        cerradasBody.innerHTML = "";
-
-        data.forEach(inc => {
-          const fila = `
-            <tr>
-              <td>${inc.referencia}</td>
-              <td>${inc.centro}</td>
-              <td>${inc.descripcion}</td>
-              <td>${inc.solicitado}</td>
-              <td>${inc.estado}</td>
-            </tr>`;
-          if (inc.estado === "Abierta") {
-            abiertasBody.innerHTML += fila;
-          } else {
-            cerradasBody.innerHTML += fila;
-          }
-        });
+        console.log("GET OK:", data);
+        alert("GET OK (mira la consola)");
       } catch (err) {
-        console.error("Error al cargar incidencias", err);
+        console.error("Error GET:", err);
       }
     }
 
-    async function guardarEnSheet(datos) {
+    async function probarPOST() {
       try {
-        const res = await fetch(APPS_SCRIPT_URL, {
+        const res = await fetch(API_URL, {
           method: "POST",
-          body: JSON.stringify(datos),
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            referencia: "TEST-123",
+            centro: "Eroski",
+            solicitadoPor: "Tester",
+            descripcion: "Incidencia de prueba",
+            materiales: "Ninguno",
+            foto: "",
+            fechaApertura: new Date().toISOString(),
+            fechaCierre: "",
+            cerrada: false
+          })
         });
-        return await res.json();
+        const data = await res.json();
+        console.log("POST OK:", data);
+        alert("POST OK (mira la consola)");
       } catch (err) {
-        console.error("Error guardando en sheet:", err);
+        console.error("Error POST:", err);
       }
     }
-
-    document.getElementById("incidenciaForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const datos = Object.fromEntries(formData.entries());
-      datos.referencia = Date.now(); // ID único
-      await guardarEnSheet(datos);
-      e.target.reset();
-      cargarDeSheet();
-    });
-
-    document.querySelectorAll(".tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.tab).classList.add("active");
-      });
-    });
-
-    cargarDeSheet();
   </script>
 </body>
 </html>
