@@ -1,252 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gestión de Incidencias - EROSKI</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>
-    body { background-color: #f8f9fa; padding-top: 20px; }
-    .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .photo-preview { max-width: 100px; margin: 5px; cursor: pointer; }
-  </style>
-
-  <!-- 🔐 LOGIN CON MEMORIA -->
-  <script>
-    const ACCESS_PASSWORD = '123';
-    const ACCESS_USER = 'lcc';
-
-    function isAuthenticated() {
-      return localStorage.getItem('auth') === 'true';
-    }
-    function setAuthenticated() {
-      localStorage.setItem('auth', 'true');
-    }
-    function requestAccess() {
-      if (isAuthenticated()) return true;
-      const maxAttempts = 3;
-      let attempts = 0;
-      while (attempts < maxAttempts) {
-        const user = prompt('🔐 Usuario:', '');
-        if (user === null) return accesoDenegado();
-        const pass = prompt('🔐 Contraseña:', '');
-        if (pass === null) return accesoDenegado();
-        if (user === ACCESS_USER && pass === ACCESS_PASSWORD) {
-          setAuthenticated();
-          return true;
-        }
-        attempts++;
-        alert(`❌ Credenciales incorrectas (${attempts}/${maxAttempts})`);
-      }
-      return accesoDenegado();
-    }
-    function accesoDenegado() {
-      document.body.innerHTML = '<h1 class="text-center mt-5">🚫 Acceso denegado</h1>';
-      return false;
-    }
-    if (!requestAccess()) throw new Error('Acceso denegado');
-  </script>
+  <meta charset="UTF-8">
+  <title>Test API GAS</title>
 </head>
 <body>
-  <div class="container">
-    <h1 class="text-center mb-4">Gestión de Incidencias - <strong>SUPERMERCADOS EROSKI</strong></h1>
-    <ul class="nav nav-tabs mb-4">
-      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nueva">Nueva Incidencia</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#abiertas">Abiertas</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cerradas">Cerradas</a></li>
-    </ul>
+  <h1>Test Google Apps Script</h1>
+  <button onclick="probarGET()">Probar GET</button>
+  <button onclick="probarPOST()">Probar POST</button>
 
-    <div class="tab-content">
-      <!-- Nueva incidencia -->
-      <div class="tab-pane fade show active" id="nueva">
-        <div class="card">
-          <div class="card-body">
-            <form id="formIncidencia">
-              <div class="mb-3">
-                <label>Centro EROSKI</label>
-                <select class="form-select" id="centro" required>
-                  <option value="">Selecciona centro</option>
-                  <option>Eroski Binissalem I (6705)</option>
-                  <option>Eroski NOVA PARIS-CALVIA (7490)</option>
-                  <option>Eroski Son Moix (6801)</option>
-                  <option>Eroski La Puebla (6362)</option>
-                  <option>Eroski Bendinat (6752)</option>
-                  <option>Eroski Santa María I (6309)</option>
-                  <option>Eroski Escorxador (6363)</option>
-                  <option>Eroski Palmanova (6537)</option>
-                  <option>Eroski Colonia (6499)</option>
-                  <option>Eroski Capitán Salom (6892)</option>
-                  <option>Eroski Llucmajor (6759)</option>
-                  <option>Eroski Alaró (6719)</option>
-                  <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
-                  <option>Eroski Muro (6909)</option>
-                  <option>Eroski Sa Cabaneta (6852)</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label>Solicitado por</label>
-                <select class="form-select" id="solicitadoPor" required>
-                  <option value="Operario">Operario</option>
-                  <option value="Encargado tienda">Encargado tienda</option>
-                  <option value="Jefe de zona">Jefe de zona</option>
-                  <option value="Directivo dpto. técnico">Directivo dpto. técnico</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label>Descripción</label>
-                <textarea class="form-control" id="descripcion" rows="3" required></textarea>
-              </div>
-              <div class="mb-3">
-                <label>Materiales necesarios</label>
-                <input type="text" class="form-control" id="materiales"/>
-              </div>
-              <div class="mb-3">
-                <label>Foto (opcional)</label>
-                <input type="file" class="form-control" id="foto" accept="image/*"/>
-              </div>
-              <button type="submit" class="btn btn-primary">Crear Incidencia</button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Abiertas -->
-      <div class="tab-pane fade" id="abiertas">
-        <div id="listaAbiertas" class="row"></div>
-      </div>
-
-      <!-- Cerradas -->
-      <div class="tab-pane fade" id="cerradas">
-        <div id="listaCerradas" class="row"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de foto -->
-  <div class="modal fade" id="photoModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body text-center">
-          <img id="modalImage" class="img-fluid" src="" alt="Foto"/>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    let incidencias = [];
+    const API_URL = "https://script.google.com/macros/s/AKfycbyBO3W5MDTpVs-WQqkLYwH-Tx-Y5O3RL75GEBgxICdzyLD3y5u17-gBLFcIPZI7XsLf/exec";
 
-    // ✅ PEGA TU URL DE APPS SCRIPT (la que termina en /exec)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtstPLoqGXc4zg0UzAAXtClcHOkYidwKgI2JMyB6vh2o8ju8-ciiw4fez_k2f17maZ/exec';
-
-    async function cargarDeSheet() {
+    async function probarGET() {
       try {
-        const res = await fetch(APPS_SCRIPT_URL);
-        return await res.json();
-      } catch (e) {
-        console.error('Error al cargar incidencias', e);
-        return [];
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        console.log("GET OK:", data);
+        alert("GET OK (mira la consola)");
+      } catch (err) {
+        console.error("Error GET:", err);
       }
     }
 
-    async function guardarEnSheet(inc) {
+    async function probarPOST() {
       try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(inc)
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            referencia: "TEST-123",
+            centro: "Eroski",
+            solicitadoPor: "Tester",
+            descripcion: "Incidencia de prueba",
+            materiales: "Ninguno",
+            foto: "",
+            fechaApertura: new Date().toISOString(),
+            fechaCierre: "",
+            cerrada: false
+          })
         });
-        return await res.json();
-      } catch (e) {
-        console.error('Error guardando en sheet:', e);
+        const data = await res.json();
+        console.log("POST OK:", data);
+        alert("POST OK (mira la consola)");
+      } catch (err) {
+        console.error("Error POST:", err);
       }
     }
-
-    document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fotoInput = document.getElementById('foto');
-      let fotoData = null;
-      if (fotoInput.files[0]) {
-        fotoData = await new Promise(r => {
-          const a = new FileReader();
-          a.onload = e => r(e.target.result);
-          a.readAsDataURL(fotoInput.files[0]);
-        });
-      }
-
-      const nueva = {
-        centro: document.getElementById('centro').value,
-        solicitadoPor: document.getElementById('solicitadoPor').value,
-        descripcion: document.getElementById('descripcion').value,
-        materiales: document.getElementById('materiales').value,
-        foto: fotoData,
-        fechaApertura: new Date().toISOString(),
-        cerrada: "No"
-      };
-
-      const res = await guardarEnSheet(nueva);
-      if (res && res.ok) {
-        alert(`✅ Incidencia creada: ${res.referencia}`);
-        document.getElementById('formIncidencia').reset();
-        incidencias = await cargarDeSheet();
-        render();
-      } else {
-        alert('❌ Error al guardar la incidencia: ' + (res?.error || 'Sin conexión'));
-      }
-    });
-
-    function render() {
-      renderLista('#listaAbiertas', i => i.Cerrada === 'No');
-      renderLista('#listaCerradas', i => i.Cerrada === 'Sí');
-    }
-
-    function renderLista(selector, filtro) {
-      const el = document.querySelector(selector);
-      if (!el) return;
-      el.innerHTML = '';
-
-      const lista = Array.isArray(incidencias) ? incidencias.filter(filtro) : [];
-      if (lista.length === 0) {
-        el.innerHTML = '<p class="text-muted">No hay incidencias.</p>';
-        return;
-      }
-
-      lista.forEach(i => {
-        const fechaApertura = new Date(i['Fecha Apertura']).toLocaleDateString();
-        const fechaCierre = i['Fecha Cierre'] ? new Date(i['Fecha Cierre']).toLocaleDateString() : '—';
-
-        const div = document.createElement('div');
-        div.className = 'col-md-6 mb-3';
-        div.innerHTML = `
-          <div class="card">
-            <div class="card-body">
-              <h6 class="text-muted">${i.Referencia}</h6>
-              <h5>${i.Centro}</h5>
-              <p class="small">${i.Descripcion}</p>
-              <p><strong>Solicitado por:</strong> ${i.SolicitadoPor}</p>
-              <p><strong>Apertura:</strong> ${fechaApertura}</p>
-              <p><strong>Cierre:</strong> ${fechaCierre}</p>
-              ${i.Materiales ? `<p><strong>Materiales:</strong> ${i.Materiales}</p>` : ''}
-              ${i.Foto ? `<img src="${i.Foto}" class="img-thumbnail photo-preview" data-img="${i.Foto}">` : ''}
-            </div>
-          </div>
-        `;
-        el.appendChild(div);
-      });
-
-      document.querySelectorAll('.photo-preview').forEach(img => {
-        img.addEventListener('click', e => {
-          document.getElementById('modalImage').src = e.target.dataset.img;
-          new bootstrap.Modal(document.getElementById('photoModal')).show();
-        });
-      });
-    }
-
-    window.addEventListener('load', async () => {
-      incidencias = await cargarDeSheet();
-      render();
-    });
   </script>
 </body>
 </html>
