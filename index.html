@@ -1,75 +1,76 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Prueba Proxy Incidencias</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #output {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      background: #f9f9f9;
-      white-space: pre-wrap;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Gestión de Incidencias Eroski</title>
 </head>
 <body>
-  <h1>Prueba de conexión con Google Sheets vía Cloudflare Worker</h1>
+  <h1>Incidencias Eroski</h1>
 
-  <button onclick="probarGET()">Probar GET (leer incidencias)</button>
-  <button onclick="probarPOST()">Probar POST (guardar incidencia demo)</button>
+  <form id="formIncidencia">
+    <input type="text" name="referencia" placeholder="Referencia" required><br>
+    <input type="text" name="centro" placeholder="Centro"><br>
+    <input type="text" name="solicitadoPor" placeholder="Solicitado por"><br>
+    <textarea name="descripcion" placeholder="Descripción"></textarea><br>
+    <input type="text" name="materiales" placeholder="Materiales"><br>
+    <button type="submit">Guardar incidencia</button>
+  </form>
 
-  <div id="output">Esperando pruebas...</div>
+  <h2>Listado de incidencias</h2>
+  <ul id="lista"></ul>
 
   <script>
-    // 👇 Tu Worker Proxy
-    const APPS_SCRIPT_URL = "https://proxy-incidencias.albapeptoni.workers.dev";
+    const API_URL = "https://proxy-incidencias.albapeptoni.workers.dev/";
 
-    async function probarGET() {
+    async function cargarIncidencias() {
       try {
-        const res = await fetch(APPS_SCRIPT_URL);
+        const res = await fetch(API_URL);
         const data = await res.json();
-        document.getElementById("output").textContent =
-          "✅ GET correcto:\n" + JSON.stringify(data, null, 2);
+        const lista = document.getElementById("lista");
+        lista.innerHTML = "";
+        data.data.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = `${item.referencia} - ${item.descripcion}`;
+          lista.appendChild(li);
+        });
       } catch (err) {
-        document.getElementById("output").textContent =
-          "❌ Error GET:\n" + err;
-        console.error("Error GET:", err);
+        console.error("Error al cargar incidencias", err);
       }
     }
 
-    async function probarPOST() {
+    async function guardarIncidencia(evt) {
+      evt.preventDefault();
+      const form = evt.target;
+      const incidencia = {
+        referencia: form.referencia.value,
+        centro: form.centro.value,
+        solicitadoPor: form.solicitadoPor.value,
+        descripcion: form.descripcion.value,
+        materiales: form.materiales.value,
+        foto: "",
+        fechaApertura: new Date().toISOString(),
+        fechaCierre: "",
+        cerrada: "No"
+      };
+
       try {
-        const res = await fetch(APPS_SCRIPT_URL, {
+        const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            centro: "SUPERMERCADO DEMO",
-            incidencia: "Prueba desde Worker Proxy",
-            prioridad: "Alta",
-            fecha: new Date().toISOString(),
-          }),
+          body: JSON.stringify(incidencia)
         });
-        const data = await res.json();
-        document.getElementById("output").textContent =
-          "✅ POST correcto:\n" + JSON.stringify(data, null, 2);
+        const result = await res.json();
+        console.log("Guardado:", result);
+        cargarIncidencias();
+        form.reset();
       } catch (err) {
-        document.getElementById("output").textContent =
-          "❌ Error POST:\n" + err;
-        console.error("Error POST:", err);
+        console.error("Error guardando incidencia", err);
       }
     }
+
+    document.getElementById("formIncidencia").addEventListener("submit", guardarIncidencia);
+
+    cargarIncidencias();
   </script>
 </body>
 </html>
