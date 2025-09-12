@@ -1,49 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Test API GAS</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prueba Proxy Incidencias</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  <h1>Test Google Apps Script</h1>
-  <button onclick="probarGET()">Probar GET</button>
-  <button onclick="probarPOST()">Probar POST</button>
+  <h1>Prueba de conexión con Google Sheets vía Cloudflare Worker</h1>
+
+  <button onclick="probarGET()">Probar GET (leer incidencias)</button>
+  <button onclick="probarPOST()">Probar POST (guardar incidencia demo)</button>
+
+  <div id="output">Esperando pruebas...</div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxbvvB58Qarp56tjXTmVZnev2ODdS2PTWK76W1frN6wUAg22w6XR-javIkS2p17tufU/exec";
+    // 👇 Tu Worker Proxy
+    const APPS_SCRIPT_URL = "https://proxy-incidencias.albapeptoni.workers.dev";
 
     async function probarGET() {
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(APPS_SCRIPT_URL);
         const data = await res.json();
-        console.log("GET OK:", data);
-        alert("GET OK (mira la consola)");
+        document.getElementById("output").textContent =
+          "✅ GET correcto:\n" + JSON.stringify(data, null, 2);
       } catch (err) {
+        document.getElementById("output").textContent =
+          "❌ Error GET:\n" + err;
         console.error("Error GET:", err);
       }
     }
 
     async function probarPOST() {
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(APPS_SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            referencia: "TEST-123",
-            centro: "Eroski",
-            solicitadoPor: "Tester",
-            descripcion: "Incidencia de prueba",
-            materiales: "Ninguno",
-            foto: "",
-            fechaApertura: new Date().toISOString(),
-            fechaCierre: "",
-            cerrada: false
-          })
+            centro: "SUPERMERCADO DEMO",
+            incidencia: "Prueba desde Worker Proxy",
+            prioridad: "Alta",
+            fecha: new Date().toISOString(),
+          }),
         });
         const data = await res.json();
-        console.log("POST OK:", data);
-        alert("POST OK (mira la consola)");
+        document.getElementById("output").textContent =
+          "✅ POST correcto:\n" + JSON.stringify(data, null, 2);
       } catch (err) {
+        document.getElementById("output").textContent =
+          "❌ Error POST:\n" + err;
         console.error("Error POST:", err);
       }
     }
