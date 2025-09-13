@@ -5,17 +5,17 @@
   <title>Incidencias Eroski</title>
 </head>
 <body>
-  <h1>Incidencias</h1>
+  <h1>Prueba de Incidencias</h1>
 
   <button onclick="cargarIncidencias()">Cargar incidencias</button>
+  <pre id="salida"></pre>
 
-  <form id="form-incidencia">
+  <h2>Nueva incidencia</h2>
+  <form id="formIncidencia">
     <input type="text" name="referencia" placeholder="Referencia"><br>
     <input type="text" name="descripcion" placeholder="Descripción"><br>
     <button type="submit">Guardar</button>
   </form>
-
-  <pre id="output"></pre>
 
   <script>
     const API_URL = "https://proxy-incidencias.albapeptoni.workers.dev/";
@@ -23,29 +23,27 @@
     async function cargarIncidencias() {
       try {
         const res = await fetch(API_URL);
-        if (!res.ok) throw new Error("Error HTTP " + res.status);
         const data = await res.json();
-        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+        document.getElementById("salida").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
         console.error("Error al cargar incidencias", err);
       }
     }
 
-    document.getElementById("form-incidencia").addEventListener("submit", async (e) => {
+    document.getElementById("formIncidencia").addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
-      const payload = Object.fromEntries(formData.entries());
+      const incidencia = Object.fromEntries(formData);
 
       try {
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(incidencia)
         });
-        if (!res.ok) throw new Error("Error HTTP " + res.status);
+
         const data = await res.json();
-        alert("Incidencia guardada");
-        cargarIncidencias();
+        alert("Respuesta: " + JSON.stringify(data));
       } catch (err) {
         console.error("Error guardando incidencia", err);
       }
@@ -53,4 +51,3 @@
   </script>
 </body>
 </html>
-
