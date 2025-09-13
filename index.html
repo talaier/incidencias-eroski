@@ -2,22 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Gestión de Incidencias Eroski</title>
+  <title>Incidencias Eroski</title>
 </head>
 <body>
-  <h1>Incidencias Eroski</h1>
+  <h1>Incidencias</h1>
 
-  <form id="formIncidencia">
-    <input type="text" name="referencia" placeholder="Referencia" required><br>
-    <input type="text" name="centro" placeholder="Centro"><br>
-    <input type="text" name="solicitadoPor" placeholder="Solicitado por"><br>
-    <textarea name="descripcion" placeholder="Descripción"></textarea><br>
-    <input type="text" name="materiales" placeholder="Materiales"><br>
-    <button type="submit">Guardar incidencia</button>
+  <button onclick="cargarIncidencias()">Cargar incidencias</button>
+
+  <form id="form-incidencia">
+    <input type="text" name="referencia" placeholder="Referencia"><br>
+    <input type="text" name="descripcion" placeholder="Descripción"><br>
+    <button type="submit">Guardar</button>
   </form>
 
-  <h2>Listado de incidencias</h2>
-  <ul id="lista"></ul>
+  <pre id="output"></pre>
 
   <script>
     const API_URL = "https://proxy-incidencias.albapeptoni.workers.dev/";
@@ -25,52 +23,34 @@
     async function cargarIncidencias() {
       try {
         const res = await fetch(API_URL);
+        if (!res.ok) throw new Error("Error HTTP " + res.status);
         const data = await res.json();
-        const lista = document.getElementById("lista");
-        lista.innerHTML = "";
-        data.data.forEach(item => {
-          const li = document.createElement("li");
-          li.textContent = `${item.referencia} - ${item.descripcion}`;
-          lista.appendChild(li);
-        });
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
         console.error("Error al cargar incidencias", err);
       }
     }
 
-    async function guardarIncidencia(evt) {
-      evt.preventDefault();
-      const form = evt.target;
-      const incidencia = {
-        referencia: form.referencia.value,
-        centro: form.centro.value,
-        solicitadoPor: form.solicitadoPor.value,
-        descripcion: form.descripcion.value,
-        materiales: form.materiales.value,
-        foto: "",
-        fechaApertura: new Date().toISOString(),
-        fechaCierre: "",
-        cerrada: "No"
-      };
+    document.getElementById("form-incidencia").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
 
       try {
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(incidencia)
+          body: JSON.stringify(payload)
         });
-        const result = await res.json();
-        console.log("Guardado:", result);
+        if (!res.ok) throw new Error("Error HTTP " + res.status);
+        const data = await res.json();
+        alert("Incidencia guardada");
         cargarIncidencias();
-        form.reset();
       } catch (err) {
         console.error("Error guardando incidencia", err);
       }
-    }
-
-    document.getElementById("formIncidencia").addEventListener("submit", guardarIncidencia);
-
-    cargarIncidencias();
+    });
   </script>
 </body>
 </html>
+
