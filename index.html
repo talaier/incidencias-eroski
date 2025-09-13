@@ -1,52 +1,319 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Incidencias Eroski</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestión de Incidencias - EROSKI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body { background-color: #f8f9fa; padding-top: 20px; }
+    .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .search-section { background-color: #e8f5e8; padding: 15px; border-radius: 8px; }
+    .photo-preview { max-width: 100px; margin: 5px; cursor: pointer; }
+    .spinner-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; justify-content: center; align-items: center; }
+    .spinner-container.show { display: flex; }
+  </style>
 </head>
 <body>
-  <h1>Prueba de Incidencias</h1>
+  <div class="container">
+    <h1 class="text-center mb-4">Gestión de Incidencias - <strong>SUPERMERCADOS EROSKI</strong></h1>
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nueva">Nueva Incidencia</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#abiertas">Abiertas</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cerradas">Cerradas</a></li>
+    </ul>
 
-  <button onclick="cargarIncidencias()">Cargar incidencias</button>
-  <pre id="salida"></pre>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="nueva">
+        <div class="card">
+          <div class="card-body">
+            <form id="formIncidencia">
+              <div class="mb-3">
+                <label class="form-label">Centro EROSKI</label>
+                <select class="form-select" id="centro" required>
+                  <option value="">Selecciona centro</option>
+                  <option>Eroski Binissalem I (6705)</option>
+                  <option>Eroski NOVA PARIS-CALVIA (7490)</option>
+                  <option>Eroski Son Moix (6801)</option>
+                  <option>Eroski La Puebla (6362)</option>
+                  <option>Eroski Bendinat (6752)</option>
+                  <option>Eroski Santa María I (6309)</option>
+                  <option>Eroski Escorxador (6363)</option>
+                  <option>Eroski Palmanova (6537)</option>
+                  <option>Eroski Colonia (6499)</option>
+                  <option>Eroski Capitán Salom (6892)</option>
+                  <option>Eroski Llucmajor (6759)</option>
+                  <option>Eroski Alaró (6719)</option>
+                  <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
+                  <option>Eroski Muro (6909)</option>
+                  <option>Eroski Sa Cabaneta (6852)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Solicitado por</label>
+                <select class="form-select" id="solicitadoPor" required>
+                  <option value="operario">Operario</option>
+                  <option value="responsable">Responsable del centro</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Materiales necesarios</label>
+                <input type="text" class="form-control" id="materiales"/>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Foto (opcional)</label>
+                <input type="file" class="form-control" id="foto" accept="image/*"/>
+              </div>
+              <button type="submit" class="btn btn-primary">Crear Incidencia</button>
+            </form>
+          </div>
+        </div>
+      </div>
 
-  <h2>Nueva incidencia</h2>
-  <form id="formIncidencia">
-    <input type="text" name="referencia" placeholder="Referencia"><br>
-    <input type="text" name="descripcion" placeholder="Descripción"><br>
-    <button type="submit">Guardar</button>
-  </form>
+      <div class="tab-pane fade" id="abiertas">
+        <div id="listaAbiertas" class="row"></div>
+      </div>
 
+      <div class="tab-pane fade" id="cerradas">
+        <div id="listaCerradas" class="row"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="photoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <img id="modalImage" class="img-fluid" src="" alt="Foto de la incidencia"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spinner-container" id="spinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const API_URL = "https://proxy-incidencias.albapeptoni.workers.dev/";
+    // =================================================================
+    //  CÓDIGO COMPLETO PARA JAVASCRIPT (DENTRO DEL HTML) - ADAPTADO PARA CLOUDFLARE WORKER
+    // =================================================================
 
-    async function cargarIncidencias() {
+    // 🚀 PEGA AQUÍ LA URL DE TU CLOUDFLARE WORKER
+    const API_URL = "https://proxy-incidencias.albapeptoni.workers.dev/"; 
+    
+    let incidencias = [];
+    const spinner = document.getElementById('spinner');
+
+    function toggleSpinner(show) {
+      spinner.classList.toggle('show', show);
+    }
+
+    async function cargarDeSheet() {
+      toggleSpinner(true);
       try {
         const res = await fetch(API_URL);
+        if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
         const data = await res.json();
-        document.getElementById("salida").textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        console.error("Error al cargar incidencias", err);
+        return Array.isArray(data) ? data : [];
+      } catch (e) {
+        console.error("Error al cargar incidencias:", e);
+        alert("⚠️ Hubo un error al cargar las incidencias. Revisa la consola para más detalles.");
+        return [];
+      } finally {
+        toggleSpinner(false);
       }
     }
 
-    document.getElementById("formIncidencia").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const incidencia = Object.fromEntries(formData);
-
+    async function guardarEnSheet(inc) {
+      toggleSpinner(true);
       try {
         const res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(incidencia)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inc),
         });
-
+        if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
         const data = await res.json();
-        alert("Respuesta: " + JSON.stringify(data));
-      } catch (err) {
-        console.error("Error guardando incidencia", err);
+        console.log("Respuesta de guardado:", data);
+        return data;
+      } catch (e) {
+        console.error("Error guardando incidencia:", e);
+        alert("⚠️ Hubo un error al guardar la incidencia. Revisa la consola para más detalles.");
+      } finally {
+        toggleSpinner(false);
       }
+    }
+
+    async function actualizarEnSheet(inc) {
+      toggleSpinner(true);
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST", // POST porque Apps Script lo procesa así
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({...inc, action: 'update'}), // Añadimos la acción 'update'
+        });
+        if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
+        const data = await res.json();
+        console.log("Respuesta de actualización:", data);
+        return data;
+      } catch (e) {
+        console.error("Error actualizando incidencia:", e);
+        alert("⚠️ Hubo un error al actualizar la incidencia. Revisa la consola para más detalles.");
+      } finally {
+        toggleSpinner(false);
+      }
+    }
+
+    function generarRef() {
+      const d = new Date();
+      const date = d.getFullYear().toString().slice(-2) +
+                   String(d.getMonth() + 1).padStart(2, '0') +
+                   String(d.getDate()).padStart(2, '0');
+      const count = (Array.isArray(incidencias) ? incidencias : [])
+        .filter(i => String(i.referencia).startsWith(date))
+        .length + 1;
+      return `${date}-${String(count).padStart(2, '0')}`;
+    }
+
+    document.getElementById('formIncidencia').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fotoInput = document.getElementById('foto');
+      let fotoData = null;
+      if (fotoInput.files[0]) {
+        fotoData = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.readAsDataURL(fotoInput.files[0]);
+        });
+      }
+
+      const nueva = {
+        id: Date.now().toString(),
+        referencia: generarRef(),
+        centro: document.getElementById('centro').value,
+        solicitadoPor: document.getElementById('solicitadoPor').value,
+        descripcion: document.getElementById('descripcion').value,
+        materiales: document.getElementById('materiales').value,
+        foto: fotoData,
+        fechaApertura: new Date().toISOString(),
+        fechaCierre: null,
+        cerrada: "false"
+      };
+      
+      const res = await guardarEnSheet(nueva);
+      if (res && res.success) {
+        incidencias = await cargarDeSheet(); // Volvemos a cargar del servidor para asegurar la sincronización
+        alert(`✅ Incidencia creada: ${nueva.referencia}`);
+        document.getElementById('formIncidencia').reset();
+        render();
+      }
+    });
+    
+    function render() {
+      renderLista('#listaAbiertas', i => String(i.cerrada) === "false");
+      renderLista('#listaCerradas', i => String(i.cerrada) === "true");
+      addEventListeners();
+    }
+
+    function renderLista(selector, filtro) {
+      const el = document.querySelector(selector);
+      if (!el) return;
+
+      const lista = (Array.isArray(incidencias) ? incidencias.filter(filtro) : []).sort((a,b) => new Date(b.fechaApertura) - new Date(a.fechaApertura));
+      
+      if (lista.length === 0) {
+        el.innerHTML = '<div class="col-12"><p class="text-center text-muted mt-3">No hay incidencias en esta categoría.</p></div>';
+        return;
+      }
+
+      el.innerHTML = lista.map(i => {
+        const fechaApertura = new Date(i.fechaApertura).toLocaleDateString('es-ES');
+        const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString('es-ES') : '—';
+
+        return `
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="text-muted">${i.referencia}</h6>
+                <h5>${i.centro}</h5>
+                <p class="small">${i.descripcion}</p>
+                <p><strong>Apertura:</strong> ${fechaApertura}</p>
+                <p><strong>Cierre:</strong> ${fechaCierre}</p>
+                ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
+                ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-id="${i.id}" alt="Miniatura de incidencia">` : ''}
+                
+                <div class="mt-2">
+                    ${i.cerrada === "false" ? 
+                      `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>` : 
+                      `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>`
+                    }
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function addEventListeners() {
+      document.querySelectorAll('.photo-preview').forEach(img => {
+        img.addEventListener('click', e => {
+          const id = e.target.dataset.id;
+          const inc = incidencias.find(i => i.id === id);
+          if (inc && inc.foto) {
+              document.getElementById('modalImage').src = inc.foto;
+              new bootstrap.Modal(document.getElementById('photoModal')).show();
+          }
+        });
+      });
+
+      document.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (confirm('¿Estás seguro de que quieres cerrar esta incidencia?')) {
+            const id = e.target.dataset.id;
+            const inc = incidencias.find(i => i.id === id);
+            if(inc) {
+                inc.cerrada = "true";
+                inc.fechaCierre = new Date().toISOString();
+                const res = await actualizarEnSheet(inc);
+                if (res && res.success) {
+                  incidencias = await cargarDeSheet();
+                  render();
+                }
+            }
+          }
+        });
+      });
+
+      document.querySelectorAll('.reopen-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (confirm('¿Estás seguro de que quieres reabrir esta incidencia?')) {
+            const id = e.target.dataset.id;
+            const inc = incidencias.find(i => i.id === id);
+            if(inc) {
+                inc.cerrada = "false";
+                inc.fechaCierre = null;
+                const res = await actualizarEnSheet(inc);
+                if (res && res.success) {
+                  incidencias = await cargarDeSheet();
+                  render();
+                }
+            }
+          }
+        });
+      });
+    }
+
+    window.addEventListener('load', async () => {
+      incidencias = await cargarDeSheet();
+      render();
     });
   </script>
 </body>
