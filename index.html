@@ -214,25 +214,29 @@
     });
     
     function render() {
-      renderLista('#listaAbiertas', i => String(i.cerrada) === "false");
-      renderLista('#listaCerradas', i => String(i.cerrada) === "true");
+      const abiertas = incidencias.filter(i => String(i.cerrada) === "false" || i.cerrada === false);
+      const cerradas = incidencias.filter(i => String(i.cerrada) === "true" || i.cerrada === true);
+
+      renderLista('#listaAbiertas', abiertas);
+      renderLista('#listaCerradas', cerradas);
       addEventListeners();
     }
 
-    function renderLista(selector, filtro) {
+    function renderLista(selector, lista) {
       const el = document.querySelector(selector);
       if (!el) return;
 
-      const lista = (Array.isArray(incidencias) ? incidencias.filter(filtro) : []).sort((a,b) => new Date(b.fechaApertura) - new Date(a.fechaApertura));
-      
       if (lista.length === 0) {
         el.innerHTML = '<div class="col-12"><p class="text-center text-muted mt-3">No hay incidencias en esta categoría.</p></div>';
         return;
       }
+      
+      lista.sort((a,b) => new Date(b.fechaApertura) - new Date(a.fechaApertura));
 
       el.innerHTML = lista.map(i => {
         const fechaApertura = new Date(i.fechaApertura).toLocaleDateString('es-ES');
         const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString('es-ES') : '—';
+        const isClosed = String(i.cerrada) === "true" || i.cerrada === true;
 
         return `
           <div class="col-md-6 mb-3">
@@ -247,9 +251,9 @@
                 ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-id="${i.id}" alt="Miniatura de incidencia">` : ''}
                 
                 <div class="mt-2">
-                    ${i.cerrada === "false" ? 
-                      `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>` : 
-                      `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>`
+                    ${isClosed ? 
+                      `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>` : 
+                      `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>`
                     }
                 </div>
               </div>
