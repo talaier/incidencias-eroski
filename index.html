@@ -8,7 +8,6 @@
   <style>
     body { background-color: #f8f9fa; padding-top: 20px; }
     .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .search-section { background-color: #e8f5e8; padding: 15px; border-radius: 8px; }
     .photo-preview { max-width: 100px; margin: 5px; cursor: pointer; }
     .spinner-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; justify-content: center; align-items: center; }
     .spinner-container.show { display: flex; }
@@ -102,8 +101,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // 🚀 PEGA AQUÍ LA URL DE TU CLOUDFLARE WORKER
-    const API_URL = "https://proxy-incidencias.albapeptoni.workers.dev/"; 
+    // ⚠️ PEGA AQUÍ LA URL DE TU APPS SCRIPT
+    const APPS_SCRIPT_URL = "TU_URL_SCRIPT"; 
     
     let incidencias = [];
     const spinner = document.getElementById('spinner');
@@ -115,7 +114,7 @@
     async function cargarDeSheet() {
       toggleSpinner(true);
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(APPS_SCRIPT_URL);
         if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
         const data = await res.json();
         return Array.isArray(data) ? data : [];
@@ -131,7 +130,7 @@
     async function guardarEnSheet(inc) {
       toggleSpinner(true);
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(APPS_SCRIPT_URL, {
           method: "POST",
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(inc),
@@ -143,26 +142,6 @@
       } catch (e) {
         console.error("Error guardando incidencia:", e);
         alert("⚠️ Hubo un error al guardar la incidencia. Revisa la consola para más detalles.");
-      } finally {
-        toggleSpinner(false);
-      }
-    }
-
-    async function actualizarEnSheet(inc) {
-      toggleSpinner(true);
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST", 
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({...inc, action: 'update'}), 
-        });
-        if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
-        const data = await res.json();
-        console.log("Respuesta de actualización:", data);
-        return data;
-      } catch (e) {
-        console.error("Error actualizando incidencia:", e);
-        alert("⚠️ Hubo un error al actualizar la incidencia. Revisa la consola para más detalles.");
       } finally {
         toggleSpinner(false);
       }
@@ -201,7 +180,7 @@
         foto: fotoData,
         fechaApertura: new Date().toISOString(),
         fechaCierre: null,
-        cerrada: false
+        cerrada: "false"
       };
       
       const res = await guardarEnSheet(nueva);
@@ -214,8 +193,8 @@
     });
     
     function render() {
-      const abiertas = incidencias.filter(i => i.cerrada === false);
-      const cerradas = incidencias.filter(i => i.cerrada === true);
+      const abiertas = incidencias.filter(i => String(i.cerrada).toLowerCase() === "false");
+      const cerradas = incidencias.filter(i => String(i.cerrada).toLowerCase() === "true");
 
       renderLista('#listaAbiertas', abiertas);
       renderLista('#listaCerradas', cerradas);
@@ -236,7 +215,7 @@
       el.innerHTML = lista.map(i => {
         const fechaApertura = new Date(i.fechaApertura).toLocaleDateString('es-ES');
         const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString('es-ES') : '—';
-        const isClosed = i.cerrada === true;
+        const isClosed = String(i.cerrada).toLowerCase() === "true";
 
         return `
           <div class="col-md-6 mb-3">
@@ -280,9 +259,9 @@
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
             if(inc) {
-                inc.cerrada = true;
+                inc.cerrada = "true";
                 inc.fechaCierre = new Date().toISOString();
-                const res = await actualizarEnSheet(inc);
+                const res = await guardarEnSheet(inc);
                 if (res && res.success) {
                   incidencias = await cargarDeSheet();
                   render();
@@ -298,9 +277,9 @@
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
             if(inc) {
-                inc.cerrada = false;
+                inc.cerrada = "false";
                 inc.fechaCierre = null;
-                const res = await actualizarEnSheet(inc);
+                const res = await guardarEnSheet(inc);
                 if (res && res.success) {
                   incidencias = await cargarDeSheet();
                   render();
