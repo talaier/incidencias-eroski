@@ -201,7 +201,7 @@
         foto: fotoData,
         fechaApertura: new Date().toISOString(),
         fechaCierre: null,
-        cerrada: "false"
+        cerrada: false // Valor booleano directamente
       };
       
       const res = await guardarEnSheet(nueva);
@@ -214,8 +214,8 @@
     });
     
     function render() {
-      const abiertas = incidencias.filter(i => String(i.cerrada) === "false" || i.cerrada === false);
-      const cerradas = incidencias.filter(i => String(i.cerrada) === "true" || i.cerrada === true);
+      const abiertas = incidencias.filter(i => i.cerrada === false);
+      const cerradas = incidencias.filter(i => i.cerrada === true);
 
       renderLista('#listaAbiertas', abiertas);
       renderLista('#listaCerradas', cerradas);
@@ -236,7 +236,7 @@
       el.innerHTML = lista.map(i => {
         const fechaApertura = new Date(i.fechaApertura).toLocaleDateString('es-ES');
         const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString('es-ES') : '—';
-        const isClosed = String(i.cerrada) === "true" || i.cerrada === true;
+        const isClosed = i.cerrada === true;
 
         return `
           <div class="col-md-6 mb-3">
@@ -280,7 +280,7 @@
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
             if(inc) {
-                inc.cerrada = "true";
+                inc.cerrada = true;
                 inc.fechaCierre = new Date().toISOString();
                 const res = await actualizarEnSheet(inc);
                 if (res && res.success) {
@@ -298,7 +298,7 @@
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
             if(inc) {
-                inc.cerrada = "false";
+                inc.cerrada = false;
                 inc.fechaCierre = null;
                 const res = await actualizarEnSheet(inc);
                 if (res && res.success) {
