@@ -2,21 +2,131 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Incidencias - EROSKI</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    body { background-color: #f8f9fa; padding-top: 20px; }
-    .card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .search-section { background-color: #e8f5e8; padding: 15px; border-radius: 8px; }
-    .photo-preview { max-width: 100px; margin: 5px; cursor: pointer; }
-    .spinner-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; justify-content: center; align-items: center; }
-    .spinner-container.show { display: flex; }
+    :root {
+      --burnt-sienna: #ee755a;
+      --meat-brown: #e5b93e;
+      --mustard-green: #73692e;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      padding-top: 20px;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+    }
+
+    .card {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: none;
+      border-radius: 12px;
+      transition: transform 0.2s;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-header {
+      background-color: var(--burnt-sienna);
+      color: white;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      padding: 1rem;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      color: #555;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: var(--burnt-sienna);
+      border-bottom: 3px solid var(--burnt-sienna);
+      background-color: transparent;
+    }
+
+    .btn-primary {
+      background-color: var(--mustard-green);
+      border-color: var(--mustard-green);
+      transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #5d5526;
+      border-color: #5d5526;
+    }
+
+    .btn-danger {
+      background-color: var(--burnt-sienna);
+      border-color: var(--burnt-sienna);
+    }
+
+    .btn-danger:hover {
+      background-color: #d16954;
+      border-color: #d16954;
+    }
+    
+    .btn-outline-success {
+      color: var(--mustard-green);
+      border-color: var(--mustard-green);
+    }
+
+    .btn-outline-success:hover {
+      background-color: var(--mustard-green);
+      color: white;
+    }
+
+    .photo-preview {
+      max-width: 100px;
+      height: auto;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid #ddd;
+      transition: border-color 0.3s;
+    }
+    
+    .photo-preview:hover {
+      border-color: var(--meat-brown);
+    }
+
+    .spinner-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .spinner-container.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 class="text-center mb-4">Gestión de Incidencias - <strong>SUPERMERCADOS EROSKI</strong></h1>
+    <h1 class="text-center mb-4 text-primary">Gestión de Incidencias <br/> <strong><span style="color:var(--meat-brown)">SUPERMERCADOS EROSKI</span></strong></h1>
     <ul class="nav nav-tabs mb-4">
       <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nueva">Nueva Incidencia</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#abiertas">Abiertas</a></li>
@@ -33,19 +143,56 @@
                 <select class="form-select" id="centro" required>
                   <option value="">Selecciona centro</option>
                   <option>Eroski Binissalem I (6705)</option>
+                  <option>Eroski Binissalen II (6096)</option>
                   <option>Eroski NOVA PARIS-CALVIA (7490)</option>
+                  <option>Eroski Secar (6495)</option>
                   <option>Eroski Son Moix (6801)</option>
+                  <option>Eroski Dragonera (6350)</option>
                   <option>Eroski La Puebla (6362)</option>
+                  <option>La Puebla 2 (6067)</option>
                   <option>Eroski Bendinat (6752)</option>
+                  <option>Eroski Indioteria (6514)</option>
+                  <option>Eroski Son Cladera (6538)</option>
+                  <option>Eroski Mercat de Llevant (6729)</option>
+                  <option>Eroski Portixol (6753)</option>
+                  <option>Eroski Can Pastilla (6806)</option>
+                  <option>Eroski Borne (6831)</option>
                   <option>Eroski Santa María I (6309)</option>
+                  <option>Eroski Santa María II (6694)</option>
                   <option>Eroski Escorxador (6363)</option>
+                  <option>Eroski Coll I (6376)</option>
+                  <option>Eroski Coll II (6718)</option>
                   <option>Eroski Palmanova (6537)</option>
+                  <option>Eroski Santanvi (6713)</option>
                   <option>Eroski Colonia (6499)</option>
+                  <option>Eroski Médico Jose Darder (6749)</option>
+                  <option>Eroski Consell (6643)</option>
+                  <option>Eroski Soller II (6692)</option>
                   <option>Eroski Capitán Salom (6892)</option>
-                  <option>Eroski Llucmajor (6759)</option>
+                  <option>Eroski Campos II (6653)</option>
+                  <option>Eroski Llucmajor (6894)</option>
+                  <option>Eroski Pascual Ribot (6882)</option>
                   <option>Eroski Alaró (6719)</option>
-                  <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
+                  <option>Eroski Lloseta (6308)</option>
+                  <option>Eroski Capitán Salom II (7558)</option>
+                  <option>Eroski Son Rullan (6439)</option>
+                  <option>Eroski Son Ferriol (6714)</option>
+                  <option>Eroski Pascual Ribot II (7557)</option>
+                  <option>Eroski Fábrica (6983)</option>
+                  <option>Eroski Archiduque (6625)</option>
+                  <option>Eroski Navegación (7503)</option>
+                  <option>Eroski Inca (6398)</option>
+                  <option>Eroski Inca IV NORTE (6066)</option>
+                  <option>Eroski Andrea Doria (6574)</option>
+                  <option>Eroski Algaida (6726)</option>
+                  <option>Eroski Manacor I (6377)</option>
+                  <option>Eroski Industria (6328)</option>
+                  <option>Eroski MERCAT NOU (6755)</option>
+                  <option>Eroski Pérez Galdos (6756)</option>
+                  <option>Eroski Pere Garau (6793)</option>
                   <option>Eroski Muro (6909)</option>
+                  <option>Eroski INCA-GRAN VÍA COLOM (6895)</option>
+                  <option>Eroski Reyes Católicos (6360)</option>
                   <option>Eroski Sa Cabaneta (6852)</option>
                 </select>
               </div>
@@ -54,6 +201,7 @@
                 <select class="form-select" id="solicitadoPor" required>
                   <option value="operario">Operario</option>
                   <option value="responsable">Responsable del centro</option>
+                  <option value="jefe-de-zona">Jefe de zona</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -62,11 +210,11 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Materiales necesarios</label>
-                <input type="text" class="form-control" id="materiales"/>
+                <input type="text" class="form-control" id="materiales" />
               </div>
               <div class="mb-3">
                 <label class="form-label">Foto (opcional)</label>
-                <input type="file" class="form-control" id="foto" accept="image/*"/>
+                <input type="file" class="form-control" id="foto" accept="image/*" />
               </div>
               <button type="submit" class="btn btn-primary">Crear Incidencia</button>
             </form>
@@ -88,7 +236,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-body text-center">
-          <img id="modalImage" class="img-fluid" src="" alt="Foto de la incidencia"/>
+          <img id="modalImage" class="img-fluid" src="" alt="Foto de la incidencia" />
         </div>
       </div>
     </div>
@@ -102,8 +250,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // 🚀 PEGA AQUÍ LA URL DE TU CLOUDFLARE WORKER
-    const API_URL = "https://proxy-incidencias.albapeptoni.workers.dev/"; 
+    // ⚠️ PEGA AQUÍ LA URL DE TU APPS SCRIPT
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFyB6F7V8L4Y3tQc0G9Z5E2rP5/exec";
     
     let incidencias = [];
     const spinner = document.getElementById('spinner');
@@ -115,7 +263,7 @@
     async function cargarDeSheet() {
       toggleSpinner(true);
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(APPS_SCRIPT_URL);
         if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
         const data = await res.json();
         return Array.isArray(data) ? data : [];
@@ -131,7 +279,7 @@
     async function guardarEnSheet(inc) {
       toggleSpinner(true);
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(APPS_SCRIPT_URL, {
           method: "POST",
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(inc),
@@ -151,10 +299,10 @@
     async function actualizarEnSheet(inc) {
       toggleSpinner(true);
       try {
-        const res = await fetch(API_URL, {
-          method: "POST", 
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({...inc, action: 'update'}), 
+          body: JSON.stringify({...inc, action: 'update'}),
         });
         if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
         const data = await res.json();
@@ -206,13 +354,13 @@
       
       const res = await guardarEnSheet(nueva);
       if (res && res.success) {
-        incidencias = await cargarDeSheet(); 
+        incidencias = await cargarDeSheet();
         alert(`✅ Incidencia creada: ${nueva.referencia}`);
         document.getElementById('formIncidencia').reset();
         render();
       }
     });
-    
+
     function render() {
       const abiertas = incidencias.filter(i => i.cerrada === false);
       const cerradas = incidencias.filter(i => i.cerrada === true);
@@ -231,30 +379,34 @@
         return;
       }
       
-      lista.sort((a,b) => new Date(b.fechaApertura) - new Date(a.fechaApertura));
+      lista.sort((a, b) => new Date(b.fechaApertura) - new Date(a.fechaApertura));
 
       el.innerHTML = lista.map(i => {
-        const fechaApertura = new Date(i.fechaApertura).toLocaleDateString('es-ES');
+        const fechaApertura = i.fechaApertura ? new Date(i.fechaApertura).toLocaleDateString('es-ES') : '—';
         const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString('es-ES') : '—';
         const isClosed = i.cerrada === true;
 
         return `
-          <div class="col-md-6 mb-3">
-            <div class="card">
-              <div class="card-body">
-                <h6 class="text-muted">${i.referencia}</h6>
-                <h5>${i.centro}</h5>
-                <p class="small">${i.descripcion}</p>
-                <p><strong>Apertura:</strong> ${fechaApertura}</p>
-                <p><strong>Cierre:</strong> ${fechaCierre}</p>
-                ${i.materiales ? `<p><strong>Materiales:</strong> ${i.materiales}</p>` : ''}
+          <div class="col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-header bg-primary text-white">
+                <h6 class="mb-0 text-white">${i.referencia}</h6>
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary">${i.centro}</h5>
+                <p class="card-text small">${i.descripcion}</p>
+                <ul class="list-unstyled small mt-auto">
+                  <li><strong>Apertura:</strong> ${fechaApertura}</li>
+                  <li><strong>Cierre:</strong> ${fechaCierre}</li>
+                  ${i.materiales ? `<li><strong>Materiales:</strong> ${i.materiales}</li>` : ''}
+                </ul>
                 ${i.foto ? `<img src="${i.foto}" class="img-thumbnail photo-preview" data-id="${i.id}" alt="Miniatura de incidencia">` : ''}
                 
-                <div class="mt-2">
-                    ${isClosed ? 
-                      `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>` : 
-                      `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>`
-                    }
+                <div class="mt-3">
+                  ${isClosed ?
+                    `<button class="btn btn-sm btn-outline-success reopen-btn" data-id="${i.id}">Reabrir</button>` :
+                    `<button class="btn btn-sm btn-danger close-btn" data-id="${i.id}">Cerrar</button>`
+                  }
                 </div>
               </div>
             </div>
@@ -268,8 +420,8 @@
           const id = e.target.dataset.id;
           const inc = incidencias.find(i => i.id === id);
           if (inc && inc.foto) {
-              document.getElementById('modalImage').src = inc.foto;
-              new bootstrap.Modal(document.getElementById('photoModal')).show();
+            document.getElementById('modalImage').src = inc.foto;
+            new bootstrap.Modal(document.getElementById('photoModal')).show();
           }
         });
       });
@@ -279,14 +431,14 @@
           if (confirm('¿Estás seguro de que quieres cerrar esta incidencia?')) {
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
-            if(inc) {
-                inc.cerrada = true;
-                inc.fechaCierre = new Date().toISOString();
-                const res = await actualizarEnSheet(inc);
-                if (res && res.success) {
-                  incidencias = await cargarDeSheet();
-                  render();
-                }
+            if (inc) {
+              inc.cerrada = true;
+              inc.fechaCierre = new Date().toISOString();
+              const res = await actualizarEnSheet(inc);
+              if (res && res.success) {
+                incidencias = await cargarDeSheet();
+                render();
+              }
             }
           }
         });
@@ -297,14 +449,14 @@
           if (confirm('¿Estás seguro de que quieres reabrir esta incidencia?')) {
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
-            if(inc) {
-                inc.cerrada = false;
-                inc.fechaCierre = null;
-                const res = await actualizarEnSheet(inc);
-                if (res && res.success) {
-                  incidencias = await cargarDeSheet();
-                  render();
-                }
+            if (inc) {
+              inc.cerrada = false;
+              inc.fechaCierre = null;
+              const res = await actualizarEnSheet(inc);
+              if (res && res.success) {
+                incidencias = await cargarDeSheet();
+                render();
+              }
             }
           }
         });
