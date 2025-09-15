@@ -296,26 +296,6 @@
       }
     }
 
-    async function actualizarEnSheet(inc) {
-      toggleSpinner(true);
-      try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({...inc, action: 'update'}),
-        });
-        if (!res.ok) throw new Error(`Error en la respuesta: ${res.statusText}`);
-        const data = await res.json();
-        console.log("Respuesta de actualización:", data);
-        return data;
-      } catch (e) {
-        console.error("Error actualizando incidencia:", e);
-        alert("⚠️ Hubo un error al actualizar la incidencia. Revisa la consola para más detalles.");
-      } finally {
-        toggleSpinner(false);
-      }
-    }
-
     function generarRef() {
       const d = new Date();
       const date = d.getFullYear().toString().slice(-2) +
@@ -349,7 +329,7 @@
         foto: fotoData,
         fechaApertura: new Date().toISOString(),
         fechaCierre: null,
-        cerrada: false
+        cerrada: "false"
       };
       
       const res = await guardarEnSheet(nueva);
@@ -362,8 +342,8 @@
     });
 
     function render() {
-      const abiertas = incidencias.filter(i => i.cerrada === false);
-      const cerradas = incidencias.filter(i => i.cerrada === true);
+      const abiertas = incidencias.filter(i => String(i.cerrada).toLowerCase() === "false");
+      const cerradas = incidencias.filter(i => String(i.cerrada).toLowerCase() === "true");
 
       renderLista('#listaAbiertas', abiertas);
       renderLista('#listaCerradas', cerradas);
@@ -384,7 +364,7 @@
       el.innerHTML = lista.map(i => {
         const fechaApertura = i.fechaApertura ? new Date(i.fechaApertura).toLocaleDateString('es-ES') : '—';
         const fechaCierre = i.fechaCierre ? new Date(i.fechaCierre).toLocaleDateString('es-ES') : '—';
-        const isClosed = i.cerrada === true;
+        const isClosed = String(i.cerrada).toLowerCase() === "true";
 
         return `
           <div class="col-md-6 mb-4">
@@ -432,9 +412,9 @@
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
             if (inc) {
-              inc.cerrada = true;
+              inc.cerrada = "true";
               inc.fechaCierre = new Date().toISOString();
-              const res = await actualizarEnSheet(inc);
+              const res = await guardarEnSheet(inc);
               if (res && res.success) {
                 incidencias = await cargarDeSheet();
                 render();
@@ -450,9 +430,9 @@
             const id = e.target.dataset.id;
             const inc = incidencias.find(i => i.id === id);
             if (inc) {
-              inc.cerrada = false;
-              inc.fechaCierre = null;
-              const res = await actualizarEnSheet(inc);
+              inc.cerrada = "false";
+              inc.fechaCierre = "";
+              const res = await guardarEnSheet(inc);
               if (res && res.success) {
                 incidencias = await cargarDeSheet();
                 render();
